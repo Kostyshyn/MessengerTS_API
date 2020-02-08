@@ -1,33 +1,44 @@
 import * as express from 'express';
-import middlewares from './middlewares';
+import { RouteItem } from '@routes/index';
+import { notFoundErrorHandler, errorHandler } from '@error_handlers/index';
 
 class App {
+
   public express;
 
   constructor(
+  		private database: any,
       private middlewares: any[],
-      private routes: any[]
+      private routes: RouteItem[]
     ) {
     this.express = express();
+    this.connectDatabase(database);
     this.mountMiddlewares(middlewares);
-    this.mountRoutes();
+    this.mountRoutes(routes);
+    this.errorHandlers();
   }
 
-  private mountMiddlewares(middlewares: any[]): void {
+  private connectDatabase(database): void {
+  	database.setup();
+  }
+
+  private mountMiddlewares(middlewares): void {
     for (const i in middlewares) {
       this.express.use(middlewares[i]);
     }
   }
 
-  private mountRoutes(): void {
-    const router = express.Router()
-    router.get('/', (req, res, next) => {
-      res.json({
-        message: 'Hello World'
-      });
-    })
-    this.express.use('/', router);
+  private mountRoutes(routes): void {
+		this.express.use('/', routes);
+  }
+
+  private errorHandlers(): void {
+  	// catch 404 and forward to error handler
+  	this.express.use(notFoundErrorHandler);
+
+  	// error handler
+  	this.express.use(errorHandler);
   }
 }
 
-export default new App(middlewares, []).express;
+export default App;

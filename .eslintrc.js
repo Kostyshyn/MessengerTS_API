@@ -11,7 +11,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
-    '@typescript-eslint/no-use-before-define': 1
+    '@typescript-eslint/no-use-before-define': 1,
+    '@typescript-eslint/camelcase': 1
   }
 }
 

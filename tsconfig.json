@@ -4,7 +4,20 @@
 		"module": "commonjs",
     "removeComments": true,
 		"outDir": "dist",
-		"sourceMap": true
+		"sourceMap": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@root/*": ["src/*"],
+      "@config/*": ["src/config/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@models/*": ["src/models/*"],
+      "@routes/*": ["src/routes/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@database/*": ["src/database/*"],
+      "@services/*": ["src/services/*"],
+      "@error_handlers/*": ["src/error_handlers/*"]
+    }
 	},
 	"include": [
 		"src/**/*.ts"

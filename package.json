@@ -5,10 +5,21 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node ./dist/index.js",
-    "start:dev": "cross-env NODE_ENV=development node -r ts-node/register ./src/index.ts",
+    "start:dev": "tsc && cross-env NODE_ENV=development node -r ts-node/register ./src/index.ts",
     "dev": "nodemon",
     "lint": "eslint ./src/**",
     "build": "eslint ./src/** && tsc"
+  },
+  "_moduleAliases": {
+    "@root": "dist/",
+    "@config": "dist/config",
+    "@controllers": "dist/controllers",
+    "@models": "dist/models",
+    "@routes": "dist/routes",
+    "@middlewares": "dist/middlewares",
+    "@database": "dist/database",
+    "@services": "dist/services",
+    "@error_handlers": "dist/error_handlers"
   },
   "repository": {
     "type": "git",
@@ -50,6 +61,7 @@
     "eslint": "^6.4.0",
     "nodemon": "^1.19.2",
     "ts-node": "^8.4.1",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.6.3"
   },
   "nodemonConfig": {
@@ -58,9 +70,9 @@
       "node_modules"
     ],
     "watch": [
-      "src"
+      "./src"
     ],
-    "exec": "eslint ./src/** && npm run start:dev",
+    "exec": "npm run start:dev",
     "ext": "ts"
   }
 }
