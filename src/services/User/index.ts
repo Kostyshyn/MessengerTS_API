@@ -1,6 +1,6 @@
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
-import { HttpException } from '@error_handlers/errors';
+import { HttpException, TokenVerificationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userShowSelfData, user as userShowData } from '@data_lists/user';
 
@@ -20,7 +20,7 @@ class UserService extends Service {
 			};
 		}
 
-		throw new HttpException(404, `${user.username} not found`);
+		throw new TokenVerificationError('Token verification failed')
 	}
 
 	public async getUsers(): Promise<any> {

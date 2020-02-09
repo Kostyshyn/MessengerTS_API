@@ -17,7 +17,8 @@ class DataBase {
 			this.connection = await mongoose.connect(this.url, { 
 				useNewUrlParser: true, 
 				useUnifiedTopology: true,
-				useCreateIndex: true
+				useCreateIndex: true,
+				useFindAndModify: false
 			});
 			console.log(colors.green('DataBase successfully connected'));
 			return this.connection;

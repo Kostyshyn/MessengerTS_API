@@ -5,6 +5,10 @@ import * as cors from 'cors';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
+// storages
+
+import { publicFolder } from './storage';
+
 export default [
 	compression(),
 	helmet(),
@@ -12,5 +16,6 @@ export default [
 	express.json(),
 	express.urlencoded({ extended: false }),
 	cookieParser(),
-	cors()
+	cors(),
+	publicFolder
 ];
