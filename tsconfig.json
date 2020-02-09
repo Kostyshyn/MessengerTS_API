@@ -16,7 +16,8 @@
       "@middlewares/*": ["src/middlewares/*"],
       "@database/*": ["src/database/*"],
       "@services/*": ["src/services/*"],
-      "@error_handlers/*": ["src/error_handlers/*"]
+      "@error_handlers/*": ["src/error_handlers/*"],
+      "@data_lists/*": ["src/data_lists/*"]
     }
 	},
 	"include": [

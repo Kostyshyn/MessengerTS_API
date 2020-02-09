@@ -1,6 +1,8 @@
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
 import { HttpException } from '@error_handlers/errors';
+import { showFields } from '@data_lists/index';
+import { userSelf as userShowSelfData, user as userShowData } from '@data_lists/user';
 
 class UserService extends Service {
 
@@ -14,11 +16,33 @@ class UserService extends Service {
 
 		if (user) {
 			return {
-				user
+				user: showFields(user, userShowSelfData)
 			};
 		}
 
 		throw new HttpException(404, `${user.username} not found`);
+	}
+
+	public async getUsers(): Promise<any> {
+
+		const users = await this.find(User);
+
+		return {
+			users
+		};
+	}
+
+	public async getUserByUrl(url: string): Promise<any> {
+
+		const user = await this.findOne(User, { url });
+
+		if (user) {
+			return {
+				user: showFields(user, userShowData)
+			};
+		}
+
+		throw new HttpException(404, `${ url } not found`);
 	}
 
 	public async createUser(user: UserModelInterface): Promise<any> {
@@ -36,7 +60,7 @@ class UserService extends Service {
 
 		const userRecord = await this.create(User, user);
 
-		return userRecord;
+		return showFields(userRecord, userShowData);
 	}
 
 }

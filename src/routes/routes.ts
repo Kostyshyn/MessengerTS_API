@@ -19,11 +19,16 @@ export default [
 			{
 				route: '/user',
 				middleware: [protectedRoute],
-				controller: UserController.fetchUser,
+				controller: UserController.fetchUser
+			},
+			{
+				route: '/users',
+				middleware: [protectedRoute],
+				controller: UserController.getUsers,
 				children: [
 					{
-						route: '/:id',
-						controller: UserController.getUserById
+						route: '/:url',
+						controller: UserController.getUserByUrl
 					}
 				]
 			}

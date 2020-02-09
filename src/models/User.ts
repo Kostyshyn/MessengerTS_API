@@ -12,7 +12,7 @@ export interface UserModelInterface extends mongoose.Document {
   reset_token?: string;
   profile_img?: string;
   online?: boolean;
-  href?: string;
+  url?: string;
   last_seen?: any;
 }
 
@@ -51,7 +51,7 @@ const UserModel = Schema({
 		type: Boolean,
 		default: false
 	},
-	href: {
+	url: {
 		type: String,
 		unique: true,
 		trim: true,
@@ -70,7 +70,7 @@ UserModel.pre('save', function(next): any {
 
 		const hash = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
 		this.password = hash;
-		this.href = this.username.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}|=\-_`~()]/g, '').replace(/\s/g, '-');
+		this.url = '@' + this.username.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}|=\-_`~()]/g, '').replace(/\s/g, '-');
 		next(null, this);
 		
 	} 

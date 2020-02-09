@@ -19,7 +19,8 @@
     "@middlewares": "dist/middlewares",
     "@database": "dist/database",
     "@services": "dist/services",
-    "@error_handlers": "dist/error_handlers"
+    "@error_handlers": "dist/error_handlers",
+    "@data_lists": "dist/data_lists"
   },
   "repository": {
     "type": "git",

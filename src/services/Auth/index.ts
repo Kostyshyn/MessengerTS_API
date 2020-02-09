@@ -1,8 +1,10 @@
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
-import { HttpException } from '@error_handlers/errors';
+import { HttpException, ValidationError } from '@error_handlers/errors';
 import * as bcrypt from 'bcrypt-nodejs';
 import * as jwt from 'jsonwebtoken';
+import { showFields } from '@data_lists/index';
+import { user as userShowData } from '@data_lists/user';
 
 class AuthService extends Service {
 
@@ -20,12 +22,16 @@ class AuthService extends Service {
 		});
 
 		if (findUser) {
-			const token = this.generateToken({ id: findUser._id });
+			if (this.validatePassword(findUser, user.password)) {
+				const token = this.generateToken({ id: findUser._id });
 
-			return {
-				user: findUser,
-				token
-			};
+				return {
+					user: showFields(findUser, userShowData),
+					token
+				};
+			}
+
+			throw new ValidationError('Invalid password');
 		}
 
 		throw new HttpException(404, `${user.username} not found`);
@@ -49,7 +55,7 @@ class AuthService extends Service {
 		const token = this.generateToken({ id: userRecord._id });
 
 		return {
-			user: userRecord,
+			user: showFields(userRecord, userShowData),
 			token
 		};
 	}
@@ -60,6 +66,10 @@ class AuthService extends Service {
 			expiresIn: parseInt(EXPIRES_TOKEN)
 		});
 		return token;
+	}
+
+	private validatePassword(user: UserModelInterface, password: string): any {
+		return bcrypt.compareSync(password, user.password);
 	}
 
 }

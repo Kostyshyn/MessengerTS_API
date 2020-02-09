@@ -6,6 +6,12 @@ class Service {
 		});
 	}
 
+	protected find(model: any, query: any = {}): Promise<any> {
+		return model.find(query).catch(err => {
+			throw err;
+		});
+	}
+
 	protected findOne(model: any, query: any): Promise<any> {
 		return model.findOne(query).catch(err => {
 			throw err;

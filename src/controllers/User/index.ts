@@ -17,9 +17,18 @@ class UserController extends Controller {
 		}
 	}
 
-	public async getUserById(req, res, next) {
+	public async getUsers(req, res, next) {
 		try {
-			const { user } = await UserService.getUser(req.decoded);
+			const { users } = await UserService.getUsers();
+			res.json({ users });
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	public async getUserByUrl(req, res, next) {
+		try {
+			const { user } = await UserService.getUserByUrl(req.params.url);
 			res.json({ user });
 		} catch (err) {
 			next(err);
