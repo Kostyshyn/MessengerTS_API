@@ -7,5 +7,10 @@ export default {
 	},
 	LOGGER: {
 		ERRORS_TO_LOG: ['Error', 'MongoError']
+	},
+	PAGINATION: {
+		'User': {
+			PER_PAGE: 20
+		}
 	}
 };

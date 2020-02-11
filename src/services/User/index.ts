@@ -1,8 +1,10 @@
+import config from '@config/index';
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
 import { HttpException, TokenVerificationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
-import { userSelf as userShowSelfData, user as userShowData } from '@data_lists/user';
+import { userSelf as userShowSelfData, user as userShowData, userList } from '@data_lists/user';
+const { PAGINATION } = config;
 
 class UserService extends Service {
 
@@ -23,13 +25,15 @@ class UserService extends Service {
 		throw new TokenVerificationError('Token verification failed')
 	}
 
-	public async getUsers(): Promise<any> {
+	public async getUsers(options): Promise<any> {
+		const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
+		const users = await this.find(User, {}, {
+			...options,
+			select: userList.join(' '),
+			limit
+		});
 
-		const users = await this.find(User);
-
-		return {
-			users
-		};
+		return users;
 	}
 
 	public async getUserByUrl(url: string): Promise<any> {
