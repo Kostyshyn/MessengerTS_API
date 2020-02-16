@@ -15,10 +15,7 @@ class AuthService extends Service {
 	public async login(user: UserModelInterface): Promise<any> {
 
 		const findUser = await this.findOne(User, {
-			$or: [
-				{ 'username': user.username }, 
-				{ 'email': user.email }
-			]
+			'username': user.username
 		});
 
 		if (findUser) {
@@ -31,10 +28,15 @@ class AuthService extends Service {
 				};
 			}
 
-			throw new ValidationError('Invalid password');
+			throw new ValidationError({
+				password: ['Invalid password']
+			});
 		}
 
-		throw new HttpException(404, `${user.username} not found`);
+
+		throw new ValidationError({
+			username: [`${user.username} not found`]
+		});
 
 	}
 
@@ -48,7 +50,10 @@ class AuthService extends Service {
 		});
 
 		if (findUser) {
-			throw new HttpException(409, 'User is already exists');
+			const match = findUser.username === user.username ? 'username' : 'email'
+			throw new ValidationError({
+				[match]: [`User with ${match} '${user[match]}' is already exists`]
+			});
 		}
 
 		const userRecord = await this.create(User, user);

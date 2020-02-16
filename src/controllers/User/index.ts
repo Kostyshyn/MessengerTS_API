@@ -1,6 +1,5 @@
 import UserService from '@services/User/index';
 import Controller from '@controllers/index';
-import { ValidationError } from '@error_handlers/errors';
 
 class UserController extends Controller {
 

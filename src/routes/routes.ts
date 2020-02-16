@@ -2,6 +2,8 @@ import protectedRoute from '@middlewares/protected';
 import AuthController from '@controllers/Auth';
 import UserController from '@controllers/User';
 
+import { validate } from '@validators/index';
+
 export default [
 	{
 		route: '/api',
@@ -9,11 +11,13 @@ export default [
 			{
 				route: '/login',
 				method: 'post',
+				middleware: validate('login'),
 				controller: AuthController.login
 			},
 			{
 				route: '/register',
 				method: 'post',
+				middleware: validate('register'),
 				controller: AuthController.register
 			},
 			{

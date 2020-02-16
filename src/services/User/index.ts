@@ -49,24 +49,6 @@ class UserService extends Service {
 		throw new HttpException(404, `${ url } not found`);
 	}
 
-	public async createUser(user: UserModelInterface): Promise<any> {
-
-		const findUser = await this.findOne(User, {
-			$or: [
-				{ 'username': user.username }, 
-				{ 'email': user.email }
-			]
-		});
-
-		if (findUser) {
-			throw new HttpException(409,'User is already exists');
-		}
-
-		const userRecord = await this.create(User, user);
-
-		return showFields(userRecord, userShowData);
-	}
-
 }
 
 export default new UserService();

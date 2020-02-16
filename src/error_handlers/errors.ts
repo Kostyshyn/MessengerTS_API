@@ -4,7 +4,8 @@ export class HttpException extends Error {
 
 	constructor(
 			public status: number,
-			public message: string
+			public message: string,
+			public errors?: object
 		) {
 		super(message);
 	}
@@ -34,10 +35,9 @@ export class TokenVerificationError extends HttpException {
 export class ValidationError extends HttpException {
 
 	public name = 'ValidationError';
-	public errors = [];
 
-	constructor(public message: string) {
-		super(400, message);
+	constructor(public errors: object) {
+		super(422, 'Validation failed', errors);
 	}
 
 }

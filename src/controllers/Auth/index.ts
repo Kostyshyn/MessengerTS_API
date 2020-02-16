@@ -1,6 +1,5 @@
 import AuthService from '@services/Auth/index';
 import Controller from '@controllers/index';
-import { ValidationError } from '@error_handlers/errors';
 
 class AuthController extends Controller {
 

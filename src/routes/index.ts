@@ -3,7 +3,7 @@ import routesConfig from './routes';
 import { notFoundErrorHandler } from '@error_handlers/index';
 import config from '@config/index';
 
-const DEF_MIDDLEWARE = [(req: express.Request, res: express.Response, next: express.NextFunction): any => next()];
+export const DEF_MIDDLEWARE = [(req: express.Request, res: express.Response, next: express.NextFunction): any => next()];
 const DEF_METHOD = 'get';
 const DEF_CONTROLLER = notFoundErrorHandler;
 const { ALLOWED_ROUTER_METHODS } = config;

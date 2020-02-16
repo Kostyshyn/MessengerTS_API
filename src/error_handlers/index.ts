@@ -19,14 +19,22 @@ export const errorHandler = (err: HttpException, req: express.Request, res: expr
   const name = err.name || 'HttpExceptionError';
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
+  const errors = err.errors
 
   if (NODE_ENV === 'development' && ERRORS_TO_LOG.includes(err.name)) {
     console.error(err);
   }
 
-  res.status(status).json({
+  let errorResponse = {
     name,
     status,
     message
+  };
+
+  res.status(status).json({
+    name,
+    status,
+    message,
+    errors
   });
 };

@@ -20,7 +20,8 @@
     "@database": "dist/database",
     "@services": "dist/services",
     "@error_handlers": "dist/error_handlers",
-    "@data_lists": "dist/data_lists"
+    "@data_lists": "dist/data_lists",
+    "@validators": "dist/validators"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "debug": "^4.1.1",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
+    "express-validator": "^6.4.0",
     "helmet": "^3.21.1",
     "http-errors": "^1.7.3",
     "ip": "^1.1.5",

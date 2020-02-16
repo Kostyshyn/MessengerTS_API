@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { validationResult } from 'express-validator/check';
 
 export default class Controller {
 
