@@ -16,6 +16,18 @@ class UserController extends Controller {
 		}
 	}
 
+	public async updateUser(req, res, next) {
+
+		const fields = req.body;
+
+		try {
+			const { user } = await UserService.updateUser(req.decoded.id, fields);
+			res.json({ user });
+		} catch (err) {
+			next(err);
+		}
+	}
+
 	public async getUsers(req, res, next) {
 		const { page, limit } = req.query;
 

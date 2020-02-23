@@ -5,77 +5,97 @@ import * as bcrypt from 'bcrypt-nodejs';
 import * as jwt from 'jsonwebtoken';
 import { showFields } from '@data_lists/index';
 import { user as userShowData } from '@data_lists/user';
+import { userImage } from '@data_lists/image';
 
 class AuthService extends Service {
 
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	public async login(user: UserModelInterface): Promise<any> {
+  public async login(user: UserModelInterface): Promise<any> {
 
-		const findUser = await this.findOne(User, {
-			'username': user.username
-		});
+    const findUser = await this.findOne(User, {
+      'username': user.username
+    }, {
+      select: `${ userShowData.join(' ') } password`,
+      populate: [
+        { path: 'profile_image', select: userImage.join(' ') },
+        { path: 'profile_images', select: userImage.join(' ') }
+      ]
+    });
 
-		if (findUser) {
-			if (this.validatePassword(findUser, user.password)) {
-				const token = this.generateToken({ id: findUser._id });
+    if (findUser) {
+      if (this.validatePassword(findUser, user.password)) {
+        const token = this.generateToken({
+          id: findUser._id,
+          url: findUser.url
+        });
 
-				return {
-					user: showFields(findUser, userShowData),
-					token
-				};
-			}
+        return {
+          user: showFields(findUser, userShowData),
+          token
+        };
+      }
 
-			throw new ValidationError({
-				password: ['Invalid password']
-			});
-		}
+      throw new ValidationError({
+        password: ['Invalid password']
+      });
+    }
 
 
-		throw new ValidationError({
-			username: [`${user.username} not found`]
-		});
+    throw new ValidationError({
+      username: [`${user.username} not found`]
+    });
 
-	}
+  }
 
-	public async register(user: UserModelInterface): Promise<any> {
+  public async register(user: UserModelInterface): Promise<any> {
 
-		const findUser = await this.findOne(User, {
-			$or: [
-				{ 'username': user.username }, 
-				{ 'email': user.email }
-			]
-		});
+    const findUser = await this.findOne(User, {
+      $or: [
+        { 'username': user.username }, 
+        { 'email': user.email }
+      ]
+    });
 
-		if (findUser) {
-			const match = findUser.username === user.username ? 'username' : 'email'
-			throw new ValidationError({
-				[match]: [`User with ${match} '${user[match]}' is already exists`]
-			});
-		}
+    if (findUser) {
+      const match = findUser.username === user.username ? 'username' : 'email'
+      throw new ValidationError({
+        [match]: [`User with ${match} '${user[match]}' is already exists`]
+      });
+    }
 
-		const userRecord = await this.create(User, user);
-		const token = this.generateToken({ id: userRecord._id });
+    const userRecord = await this.create(User, user);
 
-		return {
-			user: showFields(userRecord, userShowData),
-			token
-		};
-	}
+    const token = this.generateToken({
+      id: userRecord._id,
+      url: userRecord.url
+    });
 
-	private generateToken(payload: any): string {
-		const { SECRET_AUTH_KEY, EXPIRES_TOKEN } = process.env;
-		const token: string = jwt.sign(payload, SECRET_AUTH_KEY, {
-			expiresIn: parseInt(EXPIRES_TOKEN)
-		});
-		return token;
-	}
+    return {
+      user: {
+        ...showFields(userRecord, userShowData),
+        profile_image: showFields(userRecord.profile_image, userImage),
+        profile_images: userRecord.profile_images.map(item => {
+          return showFields(item, userImage)
+        })
+      },
+      token
+    };
+  }
 
-	private validatePassword(user: UserModelInterface, password: string): any {
-		return bcrypt.compareSync(password, user.password);
-	}
+  private generateToken(payload: any): string {
+    const { SECRET_AUTH_KEY, EXPIRES_TOKEN } = process.env;
+    const token: string = jwt.sign(payload, SECRET_AUTH_KEY, {
+      expiresIn: parseInt(EXPIRES_TOKEN)
+    });
+    return token;
+  }
+
+  private validatePassword(user: UserModelInterface, password: string): any {
+    return bcrypt.compareSync(password, user.password);
+  }
 
 }
 

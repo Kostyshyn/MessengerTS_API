@@ -1,10 +1,12 @@
 import * as express from 'express';
 import { RouteItem } from '@routes/index';
 import { notFoundErrorHandler, errorHandler } from '@error_handlers/index';
+import { privateFolder } from '@middlewares/storage';
 
 class App {
 
   public express;
+  private privateFolder;
 
   constructor(
   		private database: any,
@@ -12,6 +14,7 @@ class App {
       private routes: RouteItem[]
     ) {
     this.express = express();
+    this.privateFolder = privateFolder;
     this.connectDatabase(database);
     this.mountMiddlewares(middlewares);
     this.mountRoutes(routes);
@@ -26,6 +29,7 @@ class App {
     for (const i in middlewares) {
       this.express.use(middlewares[i]);
     }
+    this.privateFolder(this.express);
   }
 
   private mountRoutes(routes): void {

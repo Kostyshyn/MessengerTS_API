@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt-nodejs';
 import config from '@config/index';
+import { ImageModelInterface, getDefaultImage } from '@models/Image';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -10,7 +11,8 @@ export interface UserModelInterface extends mongoose.Document {
   email: string;
   password: string;
   reset_token?: string;
-  profile_img?: string;
+  profile_image?: ImageModelInterface;
+  profile_images?: ImageModelInterface[];
   online?: boolean;
   url?: string;
   last_seen?: any;
@@ -19,7 +21,6 @@ export interface UserModelInterface extends mongoose.Document {
 const Schema = mongoose.Schema;
 
 const { PRIVATE_ACCESS_USER } = process.env;
-const { DEF_PROFILE_IMG } = config.FILES;
 
 const UserModel = Schema({
 	role: {
@@ -43,10 +44,14 @@ const UserModel = Schema({
 	reset_token: {
 		type: String
 	},
-	profile_img: {
-		type: String,
-		default: DEF_PROFILE_IMG
+	profile_image: {
+		type: Schema.Types.ObjectId,
+		ref: 'Image'
 	},
+	profile_images: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Image'
+	}],
 	online: {
 		type: Boolean,
 		default: false
@@ -54,7 +59,7 @@ const UserModel = Schema({
 	url: {
 		type: String,
 		unique: true,
-		trim: true,
+		trim: true
 	},
 	last_seen: {
 		type: Date,
@@ -64,19 +69,21 @@ const UserModel = Schema({
   	timestamps: true
 });
 
-UserModel.pre('save', function(next): any {
+UserModel.pre('save', async function(): Promise<any> {
+
+	if (this.isNew) {
+		const defImage = await getDefaultImage();
+		this.profile_image = defImage;
+		this.profile_images.push(defImage)
+	}
 
 	if (this.isModified('password') || this.isModified('username')){
-
 		const hash = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
 		this.password = hash;
-		this.url = '@' + this.username.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}|=\-_`~()]/g, '').replace(/\s/g, '-');
-		next(null, this);
-		
-	} 
-	return next();
-});
+		this.url = '@' + this.username.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}|=\-_`~()]/g, '').replace(/\s/g, '-');		
+	}
 
+});
 
 const User = mongoose.model<UserModelInterface>('User', UserModel);
 

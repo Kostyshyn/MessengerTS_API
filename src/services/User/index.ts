@@ -4,6 +4,7 @@ import Service from '@services/index';
 import { HttpException, TokenVerificationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userShowSelfData, user as userShowData, userList } from '@data_lists/user';
+import { userImage } from '@data_lists/image';
 const { PAGINATION } = config;
 
 class UserService extends Service {
@@ -14,11 +15,37 @@ class UserService extends Service {
 
 	public async getUser(id: string): Promise<any> {
 
-		const user = await this.findById(User, id);
+		const user = await this.findById(User, id, {
+      select: userShowSelfData.join(' '),
+      populate: [
+      	{ path: 'profile_image', select: userImage.join(' ') },
+      	{ path: 'profile_images', select: userImage.join(' ') }
+      ]
+    });
 
 		if (user) {
 			return {
-				user: showFields(user, userShowSelfData)
+				user
+			};
+		}
+
+		throw new TokenVerificationError('Token verification failed')
+	}
+
+	public async updateUser(id: string, fields: any): Promise<any> {
+
+		const query = { _id: id };
+		const options = { 'fields': userShowSelfData.join(' '), new: true };
+		const populate = [
+     	{ path: 'profile_image', select: userImage.join(' ') },
+      { path: 'profile_images', select: userImage.join(' ') }
+    ];
+
+		const updatedUser = await this.updateOne(User, query, fields, options, populate);
+
+		if (updatedUser) {
+			return {
+				user: updatedUser
 			};
 		}
 
@@ -30,7 +57,8 @@ class UserService extends Service {
 		const users = await this.find(User, {}, {
 			...options,
 			select: userList.join(' '),
-			limit
+			limit,
+			populate: { path: 'profile_image', select: userImage.join(' ') }
 		});
 
 		return users;
@@ -38,11 +66,17 @@ class UserService extends Service {
 
 	public async getUserByUrl(url: string): Promise<any> {
 
-		const user = await this.findOne(User, { url });
+		const user = await this.findOne(User, { url }, {
+      select: userShowData.join(' '),
+      populate: [
+      	{ path: 'profile_image', select: userImage.join(' ') },
+      	{ path: 'profile_images', select: userImage.join(' ') }
+      ]
+    });
 
 		if (user) {
 			return {
-				user: showFields(user, userShowData)
+				user
 			};
 		}
 

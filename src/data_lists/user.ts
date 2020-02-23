@@ -1,14 +1,19 @@
 export const userSelf = [
-	'profile_img',
+	'-_id',
+	'profile_image',
+	'profile_images',
 	'online',
 	'username',
 	'email',
 	'last_seen',
-	'url'
+	'url',
+	'updatedAt'
 ];
 
 export const user = [
-	'profile_img',
+	'-_id',
+	'profile_image',
+	'profile_images',
 	'online',
 	'username',
 	'email',
@@ -17,7 +22,8 @@ export const user = [
 ];
 
 export const userList = [
-	'profile_img',
+	'-_id',
+	'profile_image',
 	'username',
 	'url'
 ];

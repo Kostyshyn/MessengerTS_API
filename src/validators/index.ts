@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { check, validationResult } from 'express-validator/check';
+import { check, validationResult } from 'express-validator';
 import { ValidationError } from '@error_handlers/errors';
 import rules from '@validators/rules';
 import { DEF_MIDDLEWARE } from '@routes/index';

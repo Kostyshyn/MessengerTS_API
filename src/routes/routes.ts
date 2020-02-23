@@ -26,6 +26,12 @@ export default [
 				controller: UserController.fetchUser
 			},
 			{
+				route: '/user',
+				method: 'put',
+				middleware: [protectedRoute],
+				controller: UserController.updateUser
+			},
+			{
 				route: '/users',
 				middleware: [protectedRoute],
 				controller: UserController.getUsers,
