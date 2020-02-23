@@ -9,7 +9,7 @@ export default {
 			'image/jpg',
 			'image/png'
 		],
-		MAX_FILE_SIZE_MB_IMG: 5
+		MAX_FILE_SIZE_MB_IMG: 0.5
 	},
 	LOGGER: {
 		ERRORS_TO_LOG: ['Error', 'MongoError', 'HttpExceptionError']

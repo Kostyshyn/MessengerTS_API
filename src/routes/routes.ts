@@ -1,6 +1,7 @@
 import protectedRoute from '@middlewares/protected';
 import AuthController from '@controllers/Auth';
 import UserController from '@controllers/User';
+import UploadController from '@controllers/Upload';
 
 import { validate } from '@validators/index';
 
@@ -41,24 +42,14 @@ export default [
 						controller: UserController.getUserByUrl
 					}
 				]
-			}
+			},
+			{
+				route: '/upload/:type',
+				method: 'post',
+				middleware: [protectedRoute],
+				controller: UploadController.uploadFile
+			},
 		]
 	}
 ];
-
-// example
-
-// {
-// 	route: '/api',
-// 	middleware: [(req, res, next) => {
-// 		console.log('API middleware');
-// 		next();
-// 	}],
-// 	controller: (req, res, next) => {
-// 		res.json({
-// 			message: 'Hello from API'
-// 		});
-// 	},
-// 	children: []
-// }
 

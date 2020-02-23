@@ -4,7 +4,7 @@ import { HttpException, ValidationError } from '@error_handlers/errors';
 import * as bcrypt from 'bcrypt-nodejs';
 import * as jwt from 'jsonwebtoken';
 import { showFields } from '@data_lists/index';
-import { user as userShowData } from '@data_lists/user';
+import { userSelf as userShowSelfData } from '@data_lists/user';
 import { userImage } from '@data_lists/image';
 
 class AuthService extends Service {
@@ -18,7 +18,7 @@ class AuthService extends Service {
     const findUser = await this.findOne(User, {
       'username': user.username
     }, {
-      select: `${ userShowData.join(' ') } password`,
+      select: `${ userShowSelfData.join(' ') } password`,
       populate: [
         { path: 'profile_image', select: userImage.join(' ') },
         { path: 'profile_images', select: userImage.join(' ') }
@@ -33,7 +33,7 @@ class AuthService extends Service {
         });
 
         return {
-          user: showFields(findUser, userShowData),
+          user: showFields(findUser, [...userShowSelfData, '_id']),
           token
         };
       }
@@ -75,7 +75,7 @@ class AuthService extends Service {
 
     return {
       user: {
-        ...showFields(userRecord, userShowData),
+        ...showFields(userRecord, [...userShowSelfData, '_id']),
         profile_image: showFields(userRecord.profile_image, userImage),
         profile_images: userRecord.profile_images.map(item => {
           return showFields(item, userImage)

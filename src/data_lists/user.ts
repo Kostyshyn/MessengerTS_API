@@ -1,5 +1,4 @@
 export const userSelf = [
-	'-_id',
 	'profile_image',
 	'profile_images',
 	'online',
