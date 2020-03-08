@@ -1,4 +1,4 @@
 export const userImage = [
-	'url',
-	'-_id'
+  'url',
+  '-_id'
 ];

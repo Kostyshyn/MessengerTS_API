@@ -9,7 +9,7 @@ class App {
   private privateFolder;
 
   constructor(
-  		private database: any,
+      private database: any,
       private middlewares: any[],
       private routes: RouteItem[]
     ) {
@@ -22,7 +22,7 @@ class App {
   }
 
   private connectDatabase(database): void {
-  	database.setup();
+    database.setup();
   }
 
   private mountMiddlewares(middlewares): void {
@@ -33,15 +33,15 @@ class App {
   }
 
   private mountRoutes(routes): void {
-		this.express.use('/', routes);
+    this.express.use('/', routes);
   }
 
   private errorHandlers(): void {
-  	// catch 404 and forward to error handler
-  	this.express.use(notFoundErrorHandler);
+    // catch 404 and forward to error handler
+    this.express.use(notFoundErrorHandler);
 
-  	// error handler
-  	this.express.use(errorHandler);
+    // error handler
+    this.express.use(errorHandler);
   }
 }
 

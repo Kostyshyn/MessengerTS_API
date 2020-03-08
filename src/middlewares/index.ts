@@ -10,12 +10,12 @@ import * as compression from 'compression';
 import { publicFolder } from './storage';
 
 export default [
-	compression(),
-	helmet(),
-	logger('dev'),
-	express.json(),
-	express.urlencoded({ extended: false }),
-	cookieParser(),
-	cors(),
-	publicFolder
+  compression(),
+  helmet(),
+  logger('dev'),
+  express.json(),
+  express.urlencoded({ extended: false }),
+  cookieParser(),
+  cors(),
+  publicFolder
 ];

@@ -1,15 +1,15 @@
 const register = [
-	'username',
-	'email',
-	'passwordReg'
+  'username',
+  'email',
+  'passwordReg'
 ];
 
 const login = [
-	'username',
-	'password'
+  'username',
+  'password'
 ];
 
 export default {
-	register,
-	login
+  register,
+  login
 };

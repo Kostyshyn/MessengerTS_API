@@ -9,79 +9,79 @@ const { PAGINATION } = config;
 
 class UserService extends Service {
 
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	public async getUser(id: string): Promise<any> {
+  public async getUser(id: string): Promise<any> {
 
-		const user = await this.findById(User, id, {
+    const user = await this.findById(User, id, {
       select: userShowSelfData.join(' '),
       populate: [
-      	{ path: 'profile_image', select: userImage.join(' ') },
-      	{ path: 'profile_images', select: userImage.join(' ') }
+        { path: 'profile_image', select: userImage.join(' ') },
+        { path: 'profile_images', select: userImage.join(' ') }
       ]
     });
 
-		if (user) {
-			return {
-				user
-			};
-		}
+    if (user) {
+      return {
+        user
+      };
+    }
 
-		throw new TokenVerificationError('Token verification failed')
-	}
+    throw new TokenVerificationError('Token verification failed')
+  }
 
-	public async updateUser(id: string, fields: any): Promise<any> {
+  public async updateUser(id: string, fields: any): Promise<any> {
 
-		const query = { _id: id };
-		const options = { 'fields': userShowSelfData.join(' '), new: true };
-		const populate = [
-     	{ path: 'profile_image', select: userImage.join(' ') },
+    const query = { _id: id };
+    const options = { 'fields': userShowSelfData.join(' '), new: true };
+    const populate = [
+      { path: 'profile_image', select: userImage.join(' ') },
       { path: 'profile_images', select: userImage.join(' ') }
     ];
 
-		const updatedUser = await this.updateOne(User, query, fields, options, populate);
+    const updatedUser = await this.updateOne(User, query, fields, options, populate);
 
-		if (updatedUser) {
-			return {
-				user: updatedUser
-			};
-		}
+    if (updatedUser) {
+      return {
+        user: updatedUser
+      };
+    }
 
-		throw new TokenVerificationError('Token verification failed')
-	}
+    throw new TokenVerificationError('Token verification failed')
+  }
 
-	public async getUsers(options): Promise<any> {
-		const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
-		const users = await this.find(User, {}, {
-			...options,
-			select: userList.join(' '),
-			limit,
-			populate: { path: 'profile_image', select: userImage.join(' ') }
-		});
+  public async getUsers(options): Promise<any> {
+    const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
+    const users = await this.find(User, {}, {
+      ...options,
+      select: userList.join(' '),
+      limit,
+      populate: { path: 'profile_image', select: userImage.join(' ') }
+    });
 
-		return users;
-	}
+    return users;
+  }
 
-	public async getUserByUrl(url: string): Promise<any> {
+  public async getUserByUrl(url: string): Promise<any> {
 
-		const user = await this.findOne(User, { url }, {
+    const user = await this.findOne(User, { url }, {
       select: userShowData.join(' '),
       populate: [
-      	{ path: 'profile_image', select: userImage.join(' ') },
-      	{ path: 'profile_images', select: userImage.join(' ') }
+        { path: 'profile_image', select: userImage.join(' ') },
+        { path: 'profile_images', select: userImage.join(' ') }
       ]
     });
 
-		if (user) {
-			return {
-				user
-			};
-		}
+    if (user) {
+      return {
+        user
+      };
+    }
 
-		throw new HttpException(404, `${ url } not found`);
-	}
+    throw new HttpException(404, `${ url } not found`);
+  }
 
 }
 

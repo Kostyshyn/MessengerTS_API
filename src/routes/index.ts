@@ -19,28 +19,28 @@ export interface RouteItem {
 const routes: RouteItem[] = routesConfig;
 
 function generateRoutes(router: express.Router, routes): express.Router {
-	for (const i in routes) {
-		const { 
-			method = DEF_METHOD, 
-			route, 
-			middleware = DEF_MIDDLEWARE, 
-			controller = DEF_CONTROLLER, 
-			children = []
-		} = routes[i];
+  for (const i in routes) {
+    const { 
+      method = DEF_METHOD, 
+      route, 
+      middleware = DEF_MIDDLEWARE, 
+      controller = DEF_CONTROLLER, 
+      children = []
+    } = routes[i];
 
-		if (!ALLOWED_ROUTER_METHODS.includes(method)) {
-			throw new Error(`'${ method }' - router method is forbidden`);
-		}
+    if (!ALLOWED_ROUTER_METHODS.includes(method)) {
+      throw new Error(`'${ method }' - router method is forbidden`);
+    }
 
-		router[method](route, middleware, controller);
+    router[method](route, middleware, controller);
 
-		if (children && children.length) {
-			const childrenRoutes = generateRoutes(express.Router(), children);
-			router.use(route, middleware, childrenRoutes);
-		}
-	}
+    if (children && children.length) {
+      const childrenRoutes = generateRoutes(express.Router(), children);
+      router.use(route, middleware, childrenRoutes);
+    }
+  }
 
-	return router;
+  return router;
 };
 
 export default generateRoutes(express.Router(), routes);

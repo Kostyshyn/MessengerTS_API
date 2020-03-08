@@ -10,8 +10,8 @@ class FileService extends Service {
   }
 
   public async createImage(image: ImageModelInterface ): Promise<any> {
-  	const imageRecord = await this.create(Image, image);
-  	return imageRecord;
+    const imageRecord = await this.create(Image, image);
+    return imageRecord;
   }
 
 }
