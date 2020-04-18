@@ -29,7 +29,7 @@ class AuthService extends Service {
       if (this.validatePassword(findUser, user.password)) {
         const token = this.generateToken({
           id: findUser._id,
-          url: findUser.url
+          username: findUser.username
         });
 
         return {
@@ -66,23 +66,25 @@ class AuthService extends Service {
       });
     }
 
-    const userRecord = await this.create(User, user);
+    try {
+      const userRecord = await this.create(User, user);
 
-    const token = this.generateToken({
-      id: userRecord._id,
-      url: userRecord.url
-    });
+      const token = this.generateToken({
+        id: userRecord._id,
+        username: userRecord.username // this is required to upload a files (destination directory)
+      });
 
-    return {
-      user: {
-        ...showFields(userRecord, [...userShowSelfData, '_id']),
-        profile_image: showFields(userRecord.profile_image, userImage),
-        profile_images: userRecord.profile_images.map(item => {
-          return showFields(item, userImage)
-        })
-      },
-      token
-    };
+      return {
+        user: {
+          ...showFields(userRecord, [...userShowSelfData, '_id']),
+          profile_image: showFields(userRecord.profile_image, userImage),
+          profile_images: userRecord.profile_images
+        },
+        token
+      };
+    } catch (err) {
+      throw new HttpException(500, err.message);
+    }   
   }
 
   private generateToken(payload: any): string {

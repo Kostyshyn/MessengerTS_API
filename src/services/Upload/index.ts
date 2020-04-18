@@ -8,8 +8,6 @@ import { ValidationError } from '@error_handlers/errors';
 
 const privateFolderPath: string = path.join(process.cwd(), 'storage');
 
-// util.promisify
-
 // now for images only
 
 const {
@@ -47,9 +45,9 @@ class UploadService {
   }
 
   private destination(req, file, cb): any {
-    const { url } = req.decoded;
+    const { username } = req.decoded;
     const { type } = req.params;
-    const directory = path.normalize(`${ privateFolderPath }/user/${ url }/${ type }`);
+    const directory = path.normalize(`${privateFolderPath}/user/${username}/${type}`);
     try {
       fs.statSync(directory);
     } catch (err) {
@@ -60,7 +58,7 @@ class UploadService {
 
   private filename(req, file, cb): any {
     const ext = path.extname(file.originalname);
-    const fileName = `${ Date.now() }${ ext }`;
+    const fileName = `${ Date.now() }${ext}`;
     cb(null, fileName);
   }
 

@@ -25,12 +25,6 @@ export const errorHandler = (err: HttpException, req: express.Request, res: expr
     console.error(err);
   }
 
-  let errorResponse = {
-    name,
-    status,
-    message
-  };
-
   res.status(status).json({
     name,
     status,

@@ -6,6 +6,8 @@ const { DEF_PROFILE_IMG } = config.FILES;
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
+const MODEL_NAME = 'Image';
+
 export interface ImageModelInterface extends mongoose.Document {
   name?: string;
   mimetype?: string;
@@ -17,9 +19,10 @@ export interface ImageModelInterface extends mongoose.Document {
 
 const Schema = mongoose.Schema;
 
-const ImageModel = Schema({
+const Model = Schema({
   name: {
     type: String,
+    trim: true,
     default: ''
   },
   mimetype: {
@@ -43,7 +46,7 @@ const ImageModel = Schema({
   timestamps: true
 });
 
-const Image = mongoose.model<ImageModelInterface>('Image', ImageModel);
+const Image = mongoose.model<ImageModelInterface>(MODEL_NAME, Model);
 
 export { Image };
 

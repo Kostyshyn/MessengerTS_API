@@ -1,7 +1,7 @@
 import config from '@config/index';
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
-import { HttpException, TokenVerificationError } from '@error_handlers/errors';
+import { NotFoundError, HttpException, TokenVerificationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userShowSelfData, user as userShowData, userList } from '@data_lists/user';
 import { userImage } from '@data_lists/image';
@@ -80,7 +80,7 @@ class UserService extends Service {
       };
     }
 
-    throw new HttpException(404, `${ url } not found`);
+    throw new NotFoundError(`${ url } not found`);
   }
 
 }

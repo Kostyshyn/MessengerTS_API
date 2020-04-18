@@ -20,13 +20,13 @@ class UploadController extends Controller {
       if (file) {
         const { user } = await UserService.getUser(req.decoded.id);
         const image = await FileService.createImage({
-          name: file.originalname,
+          name: file.filename,
           mimetype: file.mimetype,
           type: 'profile_image',
           user: {
             _id: user._id.toString()
           },
-          url: `storage/user/${ user.url }/image/${ file.filename }`
+          url: `storage/user/${user.username}/image/${file.filename}`
         });
         const fields = {
           profile_image: {

@@ -5,8 +5,12 @@ import { ImageModelInterface, getDefaultImage } from '@models/Image';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
+const MODEL_NAME = 'User';
+
 export interface UserModelInterface extends mongoose.Document {
   role?: number;
+  first_name: string;
+  last_name: string;
   username: string;
   email: string;
   password: string;
@@ -21,14 +25,33 @@ export interface UserModelInterface extends mongoose.Document {
 const Schema = mongoose.Schema;
 
 const { PRIVATE_ACCESS_USER } = process.env;
+const { NAME, USERNAME } = config.VALIDATION[MODEL_NAME];
 
-const UserModel = Schema({
+const Model = Schema({
   role: {
     type: Number,
     default: PRIVATE_ACCESS_USER
   },
+  first_name: {
+    type: String,
+    trim: true,
+    validate: NAME.REGEX,
+    minlength: NAME.MIN_LENGTH,
+    maxlength: NAME.MAX_LENGTH,
+    required: true
+  },
+  last_name: {
+    type: String,
+    trim: true,
+    validate: lastNameValidator,
+    maxlength: NAME.MAX_LENGTH,
+  },
   username: {
     type: String,
+    trim: true,
+    validate: USERNAME.REGEX,
+    minlength: USERNAME.MIN_LENGTH,
+    maxlength: USERNAME.MAX_LENGTH,
     required: true,
     unique: true
   },
@@ -69,22 +92,27 @@ const UserModel = Schema({
     timestamps: true
 });
 
-UserModel.pre('save', async function(): Promise<any> {
+function lastNameValidator(value) {
+  if (value) {
+    return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
+  }
+};
+
+Model.pre('save', async function(): Promise<any> {
 
   if (this.isNew) {
     const defImage = await getDefaultImage();
     this.profile_image = defImage;
-    this.profile_images.push(defImage)
   }
 
-  if (this.isModified('password') || this.isModified('username')){
+  if (this.isModified('password') || this.isModified('username')) {
     const hash = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
     this.password = hash;
-    this.url = '@' + this.username.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}|=\-_`~()]/g, '').replace(/\s/g, '_');    
+    this.url = '@' + this.username;
   }
 
 });
 
-const User = mongoose.model<UserModelInterface>('User', UserModel);
+const User = mongoose.model<UserModelInterface>(MODEL_NAME, Model);
 
 export { User };

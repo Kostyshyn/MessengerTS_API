@@ -1,5 +1,7 @@
 const register = [
-  'username',
+	'first_name',
+	'last_name',
+  'usernameReg',
   'email',
   'passwordReg'
 ];
