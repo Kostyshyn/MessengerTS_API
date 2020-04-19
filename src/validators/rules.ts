@@ -11,7 +11,14 @@ const login = [
   'password'
 ];
 
+const updateInfo = [
+	'first_name',
+	'last_name',
+  'usernameReg'
+];
+
 export default {
   register,
-  login
+  login,
+  updateInfo
 };

@@ -24,13 +24,15 @@ export default [
       {
         route: '/user',
         middleware: [protectedRoute],
-        controller: UserController.fetchUser
-      },
-      {
-        route: '/user',
-        method: 'put',
-        middleware: [protectedRoute],
-        controller: UserController.updateUser
+        controller: UserController.fetchUser,
+        children: [
+          {
+            route: '/info',
+            method: 'put',
+            middleware: validate('updateInfo'),
+            controller: UserController.updateUserInfo
+          }
+        ]
       },
       {
         route: '/users',
