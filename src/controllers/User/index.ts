@@ -33,12 +33,13 @@ class UserController extends Controller {
   }
 
   public async getUsers(req, res, next) {
-    const { page, limit } = req.query;
+    const { page, limit, keyword } = req.query;
 
     try {
       const users = await UserService.getUsers({
         page,
-        limit
+        limit,
+        keyword
       });
       res.json(users);
     } catch (err) {

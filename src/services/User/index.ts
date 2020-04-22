@@ -53,8 +53,17 @@ class UserService extends Service {
   }
 
   public async getUsers(options): Promise<any> {
+    const { keyword } = options;
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
-    const users = await this.find(User, {}, {
+    const regex = new RegExp(keyword, 'i');
+    const query = {
+      $or: [
+        { 'username': regex }, 
+        { 'first_name': regex },
+        { 'last_name': regex }
+      ]
+    };
+    const users = await this.find(User, query, {
       ...options,
       select: userList.join(' '),
       limit,
