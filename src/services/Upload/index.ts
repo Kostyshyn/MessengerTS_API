@@ -57,7 +57,7 @@ class UploadService {
   }
 
   private filename(req, file, cb): any {
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(file.originalname) || '.jpg';
     const fileName = `${ Date.now() }${ext}`;
     cb(null, fileName);
   }
