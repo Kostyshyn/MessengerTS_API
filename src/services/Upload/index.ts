@@ -12,7 +12,8 @@ const privateFolderPath: string = path.join(process.cwd(), 'storage');
 
 const {
   ACCEPT_FILES_IMG,
-  MAX_FILE_SIZE_MB_IMG
+  MAX_FILE_SIZE_MB_IMG,
+  DEF_IMG_EXT
 } = config.FILES;
 
 class UploadService {
@@ -57,7 +58,7 @@ class UploadService {
   }
 
   private filename(req, file, cb): any {
-    const ext = path.extname(file.originalname) || '.jpg';
+    const ext = path.extname(file.originalname) || `.${DEF_IMG_EXT}`;
     const fileName = `${ Date.now() }${ext}`;
     cb(null, fileName);
   }

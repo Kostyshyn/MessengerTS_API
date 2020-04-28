@@ -51,9 +51,7 @@ class Service {
 
   protected updateOne(model: any, query: any, fields: any, options: any, populate: any = {}): Promise<any> {
     return model
-      .findOneAndUpdate(query, {
-        $set: fields
-      }, options)
+      .findOneAndUpdate(query, fields, options)
       .populate(populate)
       .catch(err => {
       throw err;

@@ -52,6 +52,32 @@ class UserService extends Service {
     throw new TokenVerificationError('Token verification failed')
   }
 
+  public updateUserFields(id: string, fields: any): Promise<any> {
+    return this.updateUser(id, {
+      $set: fields
+    });
+  }
+
+  public updateUserImages(id: string, image: any): Promise<any> {
+    return this.updateUser(id, {
+      $set: {
+        profile_image: {
+          _id: image._id.toString()
+        }
+      },
+      $push: {
+        profile_images: {
+          $each: [
+          {
+            _id: image._id.toString()
+          }
+          ],
+          $position: 0
+        }
+      }
+    });  
+  }
+
   public async getUsers(options): Promise<any> {
     const { keyword } = options;
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;

@@ -21,7 +21,7 @@ class UserController extends Controller {
     const { first_name, last_name, username } = req.body;
 
     try {
-      const { user } = await UserService.updateUser(req.decoded.id, {
+      const { user } = await UserService.updateUserFields(req.decoded.id, {
         first_name,
         last_name,
         username

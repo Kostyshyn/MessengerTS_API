@@ -28,12 +28,7 @@ class UploadController extends Controller {
           },
           url: `storage/user/${user.username}/image/${file.filename}`
         });
-        const fields = {
-          profile_image: {
-            _id: image._id.toString()
-          }
-        };
-        const { user: updatedUser } = await UserService.updateUser(req.decoded.id, fields);
+        const { user: updatedUser } = await UserService.updateUserImages(req.decoded.id, image);
         return res.json({ user: updatedUser });
       }
       return next(new ValidationError({

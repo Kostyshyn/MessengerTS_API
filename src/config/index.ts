@@ -9,6 +9,7 @@ export default {
       'image/jpg',
       'image/png'
     ],
+    DEF_IMG_EXT: 'jpg',
     MAX_FILE_SIZE_MB_IMG: 0.5
   },
   LOGGER: {
