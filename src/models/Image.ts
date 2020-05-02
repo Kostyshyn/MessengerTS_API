@@ -2,24 +2,32 @@ import * as mongoose from 'mongoose';
 import config from '@config/index';
 import { UserModelInterface } from '@models/User';
 
-const { DEF_PROFILE_IMG } = config.FILES;
+const { DEF_PROFILE_IMG } = config.FILES.IMAGE;
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'Image';
 
 export interface ImageModelInterface extends mongoose.Document {
+  original_name?: string;
   name?: string;
   mimetype?: string;
   type?: string;
-  // user?: UserModelInterface;
-  user?: any;
-  url?: string;
+  user?: mongoose.Types.ObjectId;
+  path?: string;
+  size?: number;
 }
 
 const Schema = mongoose.Schema;
+const { ORIGINAL_NAME } = config.VALIDATION[MODEL_NAME];
 
 const Model = Schema({
+  original_name: {
+    type: String,
+    trim: true,
+    maxlength: ORIGINAL_NAME.MAX_LENGTH,
+    default: ''
+  },
   name: {
     type: String,
     trim: true,
@@ -37,11 +45,12 @@ const Model = Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  url: {
+  path: {
     type: String,
     unique: true,
     trim: true
-  }
+  },
+  size: Number
 }, {
   timestamps: true
 });
@@ -60,7 +69,7 @@ export const getDefaultImage = async () => {
   } else {
     return await Image.create({
       type: 'default',
-      url: DEF_PROFILE_IMG
+      path: DEF_PROFILE_IMG
     });
   }
 };

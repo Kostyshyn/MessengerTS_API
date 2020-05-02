@@ -16,7 +16,6 @@ export interface UserModelInterface extends mongoose.Document {
   password: string;
   reset_token?: string;
   profile_image?: ImageModelInterface;
-  profile_images?: ImageModelInterface[];
   online?: boolean;
   url?: string;
   last_seen?: any;
@@ -71,10 +70,6 @@ const Model = Schema({
     type: Schema.Types.ObjectId,
     ref: 'Image'
   },
-  profile_images: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Image'
-  }],
   online: {
     type: Boolean,
     default: false

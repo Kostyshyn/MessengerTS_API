@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt-nodejs';
 import * as jwt from 'jsonwebtoken';
 import { showFields } from '@data_lists/index';
 import { userSelf as userShowSelfData } from '@data_lists/user';
-import { userImage } from '@data_lists/image';
+import { userImageFields } from '@data_lists/image';
 
 class AuthService extends Service {
 
@@ -20,8 +20,7 @@ class AuthService extends Service {
     }, {
       select: `${ userShowSelfData.join(' ') } password`,
       populate: [
-        { path: 'profile_image', select: userImage.join(' ') },
-        { path: 'profile_images', select: userImage.join(' ') }
+        { path: 'profile_image', select: userImageFields.join(' ') }
       ]
     });
 
@@ -77,8 +76,7 @@ class AuthService extends Service {
       return {
         user: {
           ...showFields(userRecord, [...userShowSelfData, '_id']),
-          profile_image: showFields(userRecord.profile_image, userImage),
-          profile_images: userRecord.profile_images
+          profile_image: showFields(userRecord.profile_image, userImageFields)
         },
         token
       };

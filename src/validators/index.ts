@@ -1,10 +1,13 @@
 import * as express from 'express';
-import { check, validationResult } from 'express-validator';
+import { check, param, validationResult } from 'express-validator';
 import { ValidationError } from '@error_handlers/errors';
 import rules from '@validators/rules';
 import { DEF_MIDDLEWARE } from '@routes/index';
 import config from '@config/index';
-const { NAME, USERNAME, PASSWORD } = config.VALIDATION.User;
+const { User } = config.VALIDATION;
+const { ENTITIES, TYPES } = config.FILES;
+
+// User fields
 
 export const first_name = check('first_name')
   .trim()
@@ -12,26 +15,26 @@ export const first_name = check('first_name')
   .notEmpty()
   .withMessage('First name is required')
   .bail()
-  .matches(NAME.REGEX)
+  .matches(User.NAME.REGEX)
   .withMessage('Valid characters are A-Z a-z 0-9')
   .bail()
   .isLength({
-    min: NAME.MIN_LENGTH,
-    max: NAME.MAX_LENGTH
+    min: User.NAME.MIN_LENGTH,
+    max: User.NAME.MAX_LENGTH
   })
-  .withMessage(`Must be between ${NAME.MIN_LENGTH} and ${NAME.MAX_LENGTH} characters long`);
+  .withMessage(`Must be between ${User.NAME.MIN_LENGTH} and ${User.NAME.MAX_LENGTH} characters long`);
 
 export const last_name = check('last_name')
   .trim()
   .if(value => (!!value))
-  .matches(NAME.REGEX)
+  .matches(User.NAME.REGEX)
   .withMessage('Valid characters are A-Z a-z 0-9')
   .bail()
   .isLength({
-    min: NAME.MIN_LENGTH,
-    max: NAME.MAX_LENGTH
+    min: User.NAME.MIN_LENGTH,
+    max: User.NAME.MAX_LENGTH
   })
-  .withMessage(`Must be between ${NAME.MIN_LENGTH} and ${NAME.MAX_LENGTH} characters long`);
+  .withMessage(`Must be between ${User.NAME.MIN_LENGTH} and ${User.NAME.MAX_LENGTH} characters long`);
 
 export const usernameReg = check('username')
   .trim()
@@ -39,14 +42,14 @@ export const usernameReg = check('username')
   .notEmpty()
   .withMessage('Username is required')
   .bail()
-  .matches(USERNAME.REGEX)
+  .matches(User.USERNAME.REGEX)
   .withMessage('Valid characters are A-Z a-z 0-9. You can also use underscore or period between characters')
   .bail()
   .isLength({
-    min: USERNAME.MIN_LENGTH,
-    max: USERNAME.MAX_LENGTH
+    min: User.USERNAME.MIN_LENGTH,
+    max: User.USERNAME.MAX_LENGTH
   })
-  .withMessage(`Must be between ${USERNAME.MIN_LENGTH} and ${USERNAME.MAX_LENGTH} characters long`);
+  .withMessage(`Must be between ${User.USERNAME.MIN_LENGTH} and ${User.USERNAME.MAX_LENGTH} characters long`);
 
 export const username = check('username')
   .trim()
@@ -73,10 +76,20 @@ export const passwordReg = check('password')
   .withMessage('Password is required')
   .bail()
   .isLength({
-    min: PASSWORD.MIN_LENGTH,
-    max: PASSWORD.MAX_LENGTH
+    min: User.PASSWORD.MIN_LENGTH,
+    max: User.PASSWORD.MAX_LENGTH
   })
-  .withMessage(`Must be between ${PASSWORD.MIN_LENGTH} and ${PASSWORD.MAX_LENGTH} characters long`);
+  .withMessage(`Must be between ${User.PASSWORD.MIN_LENGTH} and ${User.PASSWORD.MAX_LENGTH} characters long`);
+
+// File
+
+export const uploadEntity = param('entity')
+  .isIn(ENTITIES)
+  .withMessage('This upload entity is not allowed')
+
+export const uploadType = param('type')
+  .isIn(TYPES)
+  .withMessage('This upload type is not allowed')
 
 // add all the rules here
 
@@ -87,10 +100,12 @@ const rulesHash = {
   username,
   email,
   password,
-  passwordReg
+  passwordReg,
+  uploadEntity,
+  uploadType
 };
 
-const formatErrors = errors => {
+export const formatErrors = errors => {
   const result = {};
   errors.map(error => {
     const errors = {};
@@ -103,7 +118,7 @@ const formatErrors = errors => {
   return result;
 };
 
-const validatorFn = (req: express.Request, res: express.Response, next: express.NextFunction): express.NextFunction => {
+export const validatorFn = (req: express.Request, res: express.Response, next: express.NextFunction): express.NextFunction => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {

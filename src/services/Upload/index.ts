@@ -11,19 +11,21 @@ const privateFolderPath: string = path.join(process.cwd(), 'storage');
 // now for images only
 
 const {
-  ACCEPT_FILES_IMG,
-  MAX_FILE_SIZE_MB_IMG,
-  DEF_IMG_EXT
+  IMAGE
 } = config.FILES;
 
 class UploadService {
 
   private fileFiltersHash = {
-    image: ACCEPT_FILES_IMG
+    image: IMAGE.ACCEPT_FILES
   }
 
   private fileLimitsHash = {
-    image: MAX_FILE_SIZE_MB_IMG
+    image: IMAGE.MAX_FILE_SIZE_MB
+  }
+
+  private defaultExtHash = {
+    image: IMAGE.DEF_EXT
   }
 
   private fileLimits(type: string): any {
@@ -46,9 +48,9 @@ class UploadService {
   }
 
   private destination(req, file, cb): any {
-    const { username } = req.decoded;
-    const { type } = req.params;
-    const directory = path.normalize(`${privateFolderPath}/user/${username}/${type}`);
+    const { id } = req.decoded;
+    const { entity, type } = req.params;
+    const directory = path.normalize(`${privateFolderPath}/${entity}/${id}/${type}`);
     try {
       fs.statSync(directory);
     } catch (err) {
@@ -57,15 +59,18 @@ class UploadService {
     cb(null, directory);
   }
 
-  private filename(req, file, cb): any {
-    const ext = path.extname(file.originalname) || `.${DEF_IMG_EXT}`;
-    const fileName = `${ Date.now() }${ext}`;
-    cb(null, fileName);
+  private filename(context): any {
+    return function (req, file, cb): any {
+      const { type } = req.params;
+      const ext = path.extname(file.originalname) || `.${context.defaultExtHash[type]}`;
+      const fileName = `${ Date.now() }${ext}`;
+      cb(null, fileName);
+    };
   }
 
   private storage = multer.diskStorage({
     destination: this.destination,
-    filename: this.filename
+    filename: this.filename(this)
   })
 
   public uploadFile(type: string): any {

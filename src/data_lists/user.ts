@@ -1,6 +1,5 @@
 export const userSelf = [
   'profile_image',
-  'profile_images',
   'online',
   'first_name',
   'last_name',
@@ -14,7 +13,6 @@ export const userSelf = [
 export const user = [
   '-_id',
   'profile_image',
-  'profile_images',
   'online',
   'first_name',
   'last_name',

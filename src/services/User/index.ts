@@ -1,10 +1,15 @@
 import config from '@config/index';
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
-import { NotFoundError, HttpException, TokenVerificationError } from '@error_handlers/errors';
+import {
+  NotFoundError,
+  HttpException,
+  TokenVerificationError,
+  ValidationError
+} from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userShowSelfData, user as userShowData, userList } from '@data_lists/user';
-import { userImage } from '@data_lists/image';
+import { userImageFields } from '@data_lists/image';
 const { PAGINATION } = config;
 
 class UserService extends Service {
@@ -18,8 +23,7 @@ class UserService extends Service {
     const user = await this.findById(User, id, {
       select: userShowSelfData.join(' '),
       populate: [
-        { path: 'profile_image', select: userImage.join(' ') },
-        { path: 'profile_images', select: userImage.join(' ') }
+        { path: 'profile_image', select: userImageFields.join(' ') }
       ]
     });
 
@@ -37,8 +41,7 @@ class UserService extends Service {
     const query = { _id: id };
     const options = { 'fields': userShowSelfData.join(' '), new: true };
     const populate = [
-      { path: 'profile_image', select: userImage.join(' ') },
-      { path: 'profile_images', select: userImage.join(' ') }
+      { path: 'profile_image', select: userImageFields.join(' ') }
     ];
 
     const updatedUser = await this.updateOne(User, query, fields, options, populate);
@@ -52,37 +55,38 @@ class UserService extends Service {
     throw new TokenVerificationError('Token verification failed')
   }
 
-  public updateUserFields(id: string, fields: any): Promise<any> {
+  public async updateUserFields(id: string, fields: any): Promise<any> {
+    if (fields.hasOwnProperty('username')) {
+      const findUser = await this.findOne(User, {
+        '_id': {
+          $ne: id
+        },
+        'username': fields.username
+      });
+      if (findUser) {
+        throw new ValidationError({
+          username: [`User with username '${fields.username}' is already exists`]
+        });
+      } else {
+        fields = {
+          ...fields,
+          url: '@' + fields.username
+        }
+      }
+    }
     return this.updateUser(id, {
       $set: fields
     });
   }
 
-  public updateUserImages(id: string, image: any): Promise<any> {
-    return this.updateUser(id, {
-      $set: {
-        profile_image: {
-          _id: image._id.toString()
-        }
-      },
-      $push: {
-        profile_images: {
-          $each: [
-          {
-            _id: image._id.toString()
-          }
-          ],
-          $position: 0
-        }
-      }
-    });  
-  }
-
-  public async getUsers(options): Promise<any> {
+  public async getUsers(id: string, options: any): Promise<any> {
     const { keyword } = options;
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const regex = new RegExp(keyword, 'i');
     const query = {
+      '_id': {
+        $ne: id
+      },
       $or: [
         { 'username': regex }, 
         { 'first_name': regex },
@@ -93,7 +97,9 @@ class UserService extends Service {
       ...options,
       select: userList.join(' '),
       limit,
-      populate: { path: 'profile_image', select: userImage.join(' ') }
+      populate: {
+        path: 'profile_image', select: userImageFields.join(' ')
+      }
     });
 
     return users;
@@ -104,8 +110,7 @@ class UserService extends Service {
     const user = await this.findOne(User, { url }, {
       select: userShowData.join(' '),
       populate: [
-        { path: 'profile_image', select: userImage.join(' ') },
-        { path: 'profile_images', select: userImage.join(' ') }
+        { path: 'profile_image', select: userImageFields.join(' ') }
       ]
     });
 

@@ -9,7 +9,8 @@ class UserController extends Controller {
 
   public async fetchUser(req, res, next) {
     try {
-      const { user } = await UserService.getUser(req.decoded.id);
+      const { id } = req.decoded;
+      const { user } = await UserService.getUser(id);
       res.json({ user });
     } catch (err) {
       next(err);
@@ -17,11 +18,10 @@ class UserController extends Controller {
   }
 
   public async updateUserInfo(req, res, next) {
-
-    const { first_name, last_name, username } = req.body;
-
     try {
-      const { user } = await UserService.updateUserFields(req.decoded.id, {
+      const { id } = req.decoded;
+      const { first_name, last_name, username } = req.body;
+      const { user } = await UserService.updateUserFields(id, {
         first_name,
         last_name,
         username
@@ -33,10 +33,10 @@ class UserController extends Controller {
   }
 
   public async getUsers(req, res, next) {
-    const { page, limit, keyword } = req.query;
-
     try {
-      const users = await UserService.getUsers({
+      const { id } = req.decoded;
+      const { page, limit, keyword } = req.query;
+      const users = await UserService.getUsers(id, {
         page,
         limit,
         keyword
@@ -49,7 +49,8 @@ class UserController extends Controller {
 
   public async getUserByUrl(req, res, next) {
     try {
-      const { user } = await UserService.getUserByUrl(req.params.url);
+      const { url } = req.params;
+      const { user } = await UserService.getUserByUrl(url);
       res.json({ user });
     } catch (err) {
       next(err);

@@ -15,7 +15,7 @@ export const notFoundErrorHandler = (req: express.Request, res: express.Response
 
 export const errorHandler = (err: HttpException, req: express.Request, res: express.Response, next: express.NextFunction): express.Response => {
   const { NODE_ENV } = process.env;
-  const { ERRORS_TO_LOG } = config.LOGGER;
+  const { ERRORS_TO_LOG, ERRORS_TO_EXIT } = config.LOGGER;
   const name = err.name || 'HttpExceptionError';
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
@@ -25,10 +25,15 @@ export const errorHandler = (err: HttpException, req: express.Request, res: expr
     console.error(err);
   }
 
+  if (ERRORS_TO_EXIT.includes(err.name)) {
+    return process.exit(0);
+  }
+
   res.status(status).json({
     name,
     status,
     message,
     errors
   });
+
 };

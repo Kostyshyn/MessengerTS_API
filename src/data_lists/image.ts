@@ -1,4 +1,8 @@
-export const userImage = [
-  'url',
+export const userImageFields = [
+  'path',
   '-_id'
+];
+
+export const userAllImagesFields = [
+  'path'
 ];

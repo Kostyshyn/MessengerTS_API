@@ -32,6 +32,7 @@ export default [
             middleware: validate('updateInfo'),
             controller: UserController.updateUserInfo
           }
+          // upload image
         ]
       },
       {
@@ -46,12 +47,11 @@ export default [
         ]
       },
       {
-        route: '/upload/:type',
+        route: '/upload/:entity/:type',
         method: 'post',
-        middleware: [protectedRoute],
-        controller: UploadController.uploadFile
-      },
+        middleware: [protectedRoute, validate('fileUpload')],
+        controller: UploadController.uploadFile.bind(UploadController)
+      }
     ]
   }
 ];
-

@@ -21,7 +21,8 @@
     "@services": "dist/services",
     "@error_handlers": "dist/error_handlers",
     "@data_lists": "dist/data_lists",
-    "@validators": "dist/validators"
+    "@validators": "dist/validators",
+    "@helpers": "dist/helpers"
   },
   "repository": {
     "type": "git",

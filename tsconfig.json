@@ -18,7 +18,8 @@
       "@services/*": ["src/services/*"],
       "@error_handlers/*": ["src/error_handlers/*"],
       "@data_lists/*": ["src/data_lists/*"],
-      "@validators/*": ["src/validators/*"]
+      "@validators/*": ["src/validators/*"],
+      "@helpers/*": ["src/helpers/*"]
     }
 	},
 	"include": [
