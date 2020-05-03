@@ -49,8 +49,8 @@ class UploadService {
 
   private destination(req, file, cb): any {
     const { id } = req.decoded;
-    const { entity, type } = req.params;
-    const directory = path.normalize(`${privateFolderPath}/${entity}/${id}/${type}`);
+    const { entity, type, pathId } = req.params;
+    const directory = path.normalize(`${privateFolderPath}/${entity}/${pathId || id}/${type}`);
     try {
       fs.statSync(directory);
     } catch (err) {

@@ -4,8 +4,9 @@ import { HttpException, ValidationError } from '@error_handlers/errors';
 import * as bcrypt from 'bcrypt-nodejs';
 import * as jwt from 'jsonwebtoken';
 import { showFields } from '@data_lists/index';
-import { userSelf as userShowSelfData } from '@data_lists/user';
+import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
+import { generateToken, validatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
 
@@ -18,21 +19,20 @@ class AuthService extends Service {
     const findUser = await this.findOne(User, {
       'username': user.username
     }, {
-      select: `${ userShowSelfData.join(' ') } password`,
+      select: `${ userSelfFields.join(' ') } password`,
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]
     });
 
     if (findUser) {
-      if (this.validatePassword(findUser, user.password)) {
-        const token = this.generateToken({
-          id: findUser._id,
-          username: findUser.username
+      if (validatePassword(findUser, user.password)) {
+        const token = generateToken({
+          id: findUser._id
         });
 
         return {
-          user: showFields(findUser, [...userShowSelfData, '_id']),
+          user: showFields(findUser, [...userSelfFields, '_id']),
           token
         };
       }
@@ -68,14 +68,13 @@ class AuthService extends Service {
     try {
       const userRecord = await this.create(User, user);
 
-      const token = this.generateToken({
-        id: userRecord._id,
-        username: userRecord.username // this is required to upload a files (destination directory)
+      const token = generateToken({
+        id: userRecord._id
       });
 
       return {
         user: {
-          ...showFields(userRecord, [...userShowSelfData, '_id']),
+          ...showFields(userRecord, [...userSelfFields, '_id']),
           profile_image: showFields(userRecord.profile_image, userImageFields)
         },
         token
@@ -84,19 +83,6 @@ class AuthService extends Service {
       throw new HttpException(500, err.message);
     }   
   }
-
-  private generateToken(payload: any): string {
-    const { SECRET_AUTH_KEY, EXPIRES_TOKEN } = process.env;
-    const token: string = jwt.sign(payload, SECRET_AUTH_KEY, {
-      expiresIn: parseInt(EXPIRES_TOKEN)
-    });
-    return token;
-  }
-
-  private validatePassword(user: UserModelInterface, password: string): any {
-    return bcrypt.compareSync(password, user.password);
-  }
-
 }
 
 export default new AuthService();

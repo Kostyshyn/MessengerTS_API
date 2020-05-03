@@ -8,7 +8,7 @@ import {
   ValidationError
 } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
-import { userSelf as userShowSelfData, user as userShowData, userList } from '@data_lists/user';
+import { userSelf as userSelfFields, user as userFields, userList as userListFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
 const { PAGINATION } = config;
 
@@ -21,7 +21,7 @@ class UserService extends Service {
   public async getUser(id: string): Promise<any> {
 
     const user = await this.findById(User, id, {
-      select: userShowSelfData.join(' '),
+      select: userSelfFields.join(' '),
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]
@@ -39,7 +39,7 @@ class UserService extends Service {
   public async updateUser(id: string, fields: any): Promise<any> {
 
     const query = { _id: id };
-    const options = { 'fields': userShowSelfData.join(' '), new: true };
+    const options = { 'fields': userSelfFields.join(' '), new: true };
     const populate = [
       { path: 'profile_image', select: userImageFields.join(' ') }
     ];
@@ -95,7 +95,7 @@ class UserService extends Service {
     };
     const users = await this.find(User, query, {
       ...options,
-      select: userList.join(' '),
+      select: userListFields.join(' '),
       limit,
       populate: {
         path: 'profile_image', select: userImageFields.join(' ')
@@ -108,7 +108,7 @@ class UserService extends Service {
   public async getUserByUrl(url: string): Promise<any> {
 
     const user = await this.findOne(User, { url }, {
-      select: userShowData.join(' '),
+      select: userFields.join(' '),
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]

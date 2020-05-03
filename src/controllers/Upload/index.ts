@@ -5,7 +5,7 @@ import FileService from '@services/File/index';
 import { ValidationError } from '@error_handlers/errors';
 import * as util from 'util';
 import config from '@config/index';
-import truncate from '@helpers/truncate';
+import { truncate } from '@helpers/general';
 const { Image } = config.VALIDATION;
 
 class UploadController extends Controller {
@@ -16,6 +16,13 @@ class UploadController extends Controller {
 
   private uploadTypesHash = {
     image: this.uploadProfileImage
+  }
+
+  private saveFileToStorage(req, res) {
+    const { type } = req.params;
+    const uploadMiddleware = UploadService.uploadFile(type);
+    const uploadPromise = util.promisify(uploadMiddleware.any());
+    return uploadPromise(req, res);
   }
 
   public async uploadFile(req, res, next) {
@@ -51,7 +58,6 @@ class UploadController extends Controller {
             _id: image._id.toString()
           }
         });
-        // const profile_images = await FileService.getUserImages(_id);
         return res.json({
           user: updatedUser
         });
@@ -67,13 +73,6 @@ class UploadController extends Controller {
       }
       next(err);
     }
-  }
-
-  private saveFileToStorage(req, res) {
-    const { type } = req.params;
-    const uploadMiddleware = UploadService.uploadFile(type);
-    const uploadPromise = util.promisify(uploadMiddleware.any());
-    return uploadPromise(req, res);
   }
 
 }

@@ -1,4 +1,4 @@
-export const showFields = function(data, dataList: string[]): any {
+export const showFields = (data, dataList: string[]): any => {
   const result = {};
   if (data && dataList && dataList.length) {
     for (const index in dataList) {

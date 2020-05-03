@@ -3,6 +3,9 @@ import AuthController from '@controllers/Auth';
 import UserController from '@controllers/User';
 import UploadController from '@controllers/Upload';
 
+import UploadService from '@services/Upload/index';
+const uploadMiddleware = UploadService.uploadFile('image');
+
 import { validate } from '@validators/index';
 
 export default [
@@ -40,6 +43,12 @@ export default [
         middleware: [protectedRoute],
         controller: UserController.getUsers,
         children: [
+          // test
+          {
+            route: '/images',
+            controller: UserController.getUserImages
+          },
+          //
           {
             route: '/:url',
             controller: UserController.getUserByUrl
@@ -47,10 +56,15 @@ export default [
         ]
       },
       {
-        route: '/upload/:entity/:type',
+        route: '/upload/:entity/:type/:pathId?',
         method: 'post',
-        middleware: [protectedRoute, validate('fileUpload')],
-        controller: UploadController.uploadFile.bind(UploadController)
+        middleware: [
+          protectedRoute,
+          validate('fileUpload'),
+          uploadMiddleware.any()
+        ],
+        controller: UploadController.uploadProfileImage,
+        children: []
       }
     ]
   }

@@ -1,12 +1,19 @@
 class Service {
 
-  protected create(model: any, data: any): Promise<any> {
+  protected create(
+    model: any,
+    data: any
+  ): Promise<any> {
     return model.create(data).catch(err => {
       throw err;
     });
   }
 
-  protected async find(model: any, query: any = {}, options: any = {}): Promise<any> {
+  protected async find(
+    model: any,
+    query: any = {},
+    options: any = {}
+  ): Promise<any> {
     const page = Math.abs(options.page) || 1;
     const total = await this.count(model, query);
     const totalPages = Math.ceil(total / options.limit);
@@ -37,7 +44,11 @@ class Service {
     return q;
   }
 
-  protected findOne(model: any, query: any, options: any = {}): Promise<any> {
+  protected findOne(
+    model: any,
+    query: any,
+    options: any = {}
+  ): Promise<any> {
     const { select, populate } = options;
     return model
       .findOne(query)
@@ -49,7 +60,13 @@ class Service {
       });
   }
 
-  protected updateOne(model: any, query: any, fields: any, options: any, populate: any = {}): Promise<any> {
+  protected updateOne(
+    model: any,
+    query: any,
+    fields: any,
+    options: any,
+    populate: any = {}
+  ): Promise<any> {
     return model
       .findOneAndUpdate(query, fields, options)
       .populate(populate)
@@ -58,7 +75,11 @@ class Service {
     });
   }
 
-  protected findById(model: any, id: string, options: any = {}): Promise<any> {
+  protected findById(
+    model: any,
+    id: string,
+    options: any = {}
+  ): Promise<any> {
     const { select, populate } = options;
     return model
       .findById(id)
@@ -69,7 +90,10 @@ class Service {
       });
   }
 
-  protected count(model: any, query: any): Promise<any> {
+  protected count(
+    model: any,
+    query: any
+  ): Promise<any> {
     return model.countDocuments(query).catch(err => {
       throw err;
     });

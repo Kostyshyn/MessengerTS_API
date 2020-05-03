@@ -1,4 +1,5 @@
 import UserService from '@services/User/index';
+import FileService from '@services/File/index';
 import Controller from '@controllers/index';
 
 class UserController extends Controller {
@@ -52,6 +53,16 @@ class UserController extends Controller {
       const { url } = req.params;
       const { user } = await UserService.getUserByUrl(url);
       res.json({ user });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async getUserImages(req, res, next) {
+    try {
+      const { id } = req.decoded;
+      const images = await FileService.getUserImages(id);
+      res.json({ images });
     } catch (err) {
       next(err);
     }
