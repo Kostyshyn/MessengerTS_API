@@ -1,5 +1,8 @@
+import * as express from 'express';
 import AuthService from '@services/Auth/index';
 import Controller from '@controllers/index';
+
+type R = express.Response | express.NextFunction;
 
 class AuthController extends Controller {
 
@@ -7,7 +10,11 @@ class AuthController extends Controller {
     super();
   }
 
-  public async login(req, res, next) {
+  public async login(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { user, token } = await AuthService.login(req.body);
       res.json({ user, token });
@@ -16,7 +23,11 @@ class AuthController extends Controller {
     }
   }
 
-  public async register(req, res, next) {
+  public async register(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { user, token } = await AuthService.register(req.body);
       res.json({ user, token });

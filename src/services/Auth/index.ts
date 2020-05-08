@@ -1,8 +1,6 @@
 import { User, UserModelInterface } from '@models/User';
 import Service from '@services/index';
 import { HttpException, ValidationError } from '@error_handlers/errors';
-import * as bcrypt from 'bcrypt-nodejs';
-import * as jwt from 'jsonwebtoken';
 import { showFields } from '@data_lists/index';
 import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
@@ -26,7 +24,8 @@ class AuthService extends Service {
     });
 
     if (findUser) {
-      if (validatePassword(findUser, user.password)) {
+      const isValidPass = await validatePassword(findUser, user.password);
+      if (isValidPass) {
         const token = generateToken({
           id: findUser._id
         });

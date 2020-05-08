@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcrypt-nodejs';
+import * as bcrypt from 'bcryptjs';
 import config from '@config/index';
 import { ImageModelInterface, getDefaultImage } from '@models/Image';
 
@@ -101,7 +101,8 @@ Model.pre('save', async function(): Promise<any> {
   }
 
   if (this.isModified('password') || this.isModified('username')) {
-    const hash = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(this.password, salt);
     this.password = hash;
     this.url = '@' + this.username;
   }

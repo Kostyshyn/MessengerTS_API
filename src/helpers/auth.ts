@@ -1,5 +1,5 @@
 import { UserModelInterface } from '@models/User';
-import * as bcrypt from 'bcrypt-nodejs';
+import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
 export const generateToken = (payload: any): string => {
@@ -10,6 +10,6 @@ export const generateToken = (payload: any): string => {
   return token;
 };
 
-export const validatePassword = (user: UserModelInterface, password: string): any => {
+export const validatePassword = (user: UserModelInterface, password: string): Promise<any> => {
   return bcrypt.compareSync(password, user.password);
 };

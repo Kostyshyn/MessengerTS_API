@@ -1,19 +1,18 @@
-import * as path from 'path';
-
 export default {
   ALLOWED_ROUTER_METHODS: ['get', 'post', 'put', 'delete'],
+  DEFAULTS: {
+    PROFILE_IMG: 'defaults/images/user/128_profile_placeholder.png'
+  },
   FILES: {
-    ENTITIES: ['user', 'chat'],
-    TYPES: ['image'],
+    MAX_FILE_SIZE_MB: 0.5,
     IMAGE: {
-      DEF_PROFILE_IMG: 'defaults/images/user/128_profile_placeholder.png',
       ACCEPT_FILES: [
         'image/jpeg',
         'image/jpg',
         'image/png'
       ],
       DEF_EXT: 'jpg',
-      MAX_FILE_SIZE_MB: 0.5
+      CROP_SIZES: [68, 128, 720, 1080]
     }
   },
   LOGGER: {

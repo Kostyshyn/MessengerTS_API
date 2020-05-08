@@ -12,7 +12,7 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-use-before-define': 1,
-    '@typescript-eslint/camelcase': 1
+    '@typescript-eslint/camelcase': 0
   }
 }
 
