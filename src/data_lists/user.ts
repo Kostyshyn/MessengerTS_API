@@ -11,7 +11,6 @@ export const userSelf = [
 ];
 
 export const user = [
-  '-_id',
   'profile_image',
   'online',
   'first_name',

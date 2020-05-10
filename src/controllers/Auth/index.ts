@@ -1,8 +1,8 @@
 import * as express from 'express';
+import { R } from '@routes/index';
 import AuthService from '@services/Auth/index';
 import Controller from '@controllers/index';
-
-type R = express.Response | express.NextFunction;
+import { generateToken } from '@helpers/auth';
 
 class AuthController extends Controller {
 
@@ -16,7 +16,10 @@ class AuthController extends Controller {
       next: express.NextFunction
     ): Promise<R> {
     try {
-      const { user, token } = await AuthService.login(req.body);
+      const user = await AuthService.login(req.body);
+      const token = generateToken({
+        id: user._id
+      });
       res.json({ user, token });
     } catch (err) {
       next(err);
@@ -29,7 +32,10 @@ class AuthController extends Controller {
       next: express.NextFunction
     ): Promise<R> {
     try {
-      const { user, token } = await AuthService.register(req.body);
+      const user = await AuthService.register(req.body);
+      const token = generateToken({
+        id: user._id
+      });
       res.json({ user, token });
     } catch (err) {
       next(err);

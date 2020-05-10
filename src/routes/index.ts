@@ -3,7 +3,26 @@ import routesConfig from './routes';
 import { notFoundErrorHandler } from '@error_handlers/index';
 import config from '@config/index';
 
-export const DEF_MIDDLEWARE = [(req: express.Request, res: express.Response, next: express.NextFunction): any => next()];
+export type R = express.Response | express.NextFunction;
+export type CFunction = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => Promise<R>;
+
+export type MFunction = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => express.NextFunction;
+
+export const DEF_MIDDLEWARE: MFunction[] = [
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): express.NextFunction => next()
+];
 const DEF_METHOD = 'get';
 const DEF_CONTROLLER = notFoundErrorHandler;
 const { ALLOWED_ROUTER_METHODS } = config;
@@ -11,8 +30,8 @@ const { ALLOWED_ROUTER_METHODS } = config;
 export interface RouteItem {
   route: string;
   method?: string;
-  middleware?: any[];
-  controller?: any;
+  middleware?: MFunction[];
+  controller?: CFunction;
   children?: RouteItem[];
 }
 

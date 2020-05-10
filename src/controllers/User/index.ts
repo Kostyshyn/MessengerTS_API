@@ -1,6 +1,9 @@
+import * as express from 'express';
 import UserService from '@services/User/index';
 import FileService from '@services/File/index';
 import Controller from '@controllers/index';
+
+type R = express.Response | express.NextFunction;
 
 class UserController extends Controller {
 
@@ -8,7 +11,11 @@ class UserController extends Controller {
     super();
   }
 
-  public async fetchUser(req, res, next) {
+  public async fetchUser(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { id } = req.decoded;
       const { user } = await UserService.getUser(id);
@@ -18,7 +25,11 @@ class UserController extends Controller {
     }
   }
 
-  public async updateUserInfo(req, res, next) {
+  public async updateUserInfo(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { id } = req.decoded;
       const { first_name, last_name, username } = req.body;
@@ -33,7 +44,11 @@ class UserController extends Controller {
     }
   }
 
-  public async getUsers(req, res, next) {
+  public async getUsers(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { id } = req.decoded;
       const { page, limit, keyword } = req.query;
@@ -48,7 +63,11 @@ class UserController extends Controller {
     }
   }
 
-  public async getUserByUrl(req, res, next) {
+  public async getUserByUrl(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { url } = req.params;
       const { user } = await UserService.getUserByUrl(url);
@@ -58,7 +77,11 @@ class UserController extends Controller {
     }
   }
 
-  public async getUserImages(req, res, next) {
+  public async getUserImages(
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ): Promise<R> {
     try {
       const { id } = req.decoded;
       const images = await FileService.getUserImages(id);
