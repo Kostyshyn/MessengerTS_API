@@ -2,7 +2,10 @@ import * as express from 'express';
 import { HttpException, NotFoundError } from './errors';
 import config from '@config/index';
 
-export const notFoundErrorHandler = (req: express.Request, res: express.Response): express.Response => {
+export const notFoundErrorHandler = (
+    req: express.Request,
+    res: express.Response
+  ): express.Response => {
   const err = new NotFoundError(req.originalUrl);
   const { name, status, message } = err;
   res.status(err.status).json({
@@ -13,7 +16,12 @@ export const notFoundErrorHandler = (req: express.Request, res: express.Response
 };
 
 
-export const errorHandler = (err: HttpException, req: express.Request, res: express.Response, next: express.NextFunction): express.Response => {
+export const errorHandler = (
+    err: HttpException,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): express.Response => {
   const { NODE_ENV } = process.env;
   const { ERRORS_TO_LOG, ERRORS_TO_EXIT } = config.LOGGER;
   const name = err.name || 'HttpExceptionError';
@@ -35,5 +43,4 @@ export const errorHandler = (err: HttpException, req: express.Request, res: expr
     message,
     errors
   });
-
 };

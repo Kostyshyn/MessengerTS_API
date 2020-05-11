@@ -1,19 +1,44 @@
+import * as mongoose from 'mongoose';
+
+export interface PopulateInterface {
+  path: string;
+  select: string;
+}
+
+export interface ServiceOptionsInterface {
+  page?: number;
+  limit?: number;
+  sort?: object;
+  select?: string;
+  populate?: PopulateInterface[] | PopulateInterface;
+}
+
+export interface PaginationInterface<T> {
+  data: Array<T>;
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  prevPage: boolean | number;
+  nextPage: boolean | number;
+}
+
 class Service {
 
-  protected create(
-    model: any,
-    data: any
-  ): Promise<any> {
+  protected create<T>(
+    model: mongoose.Model,
+    data: T
+  ): Promise<T> {
     return model.create(data).catch(err => {
       throw err;
     });
   }
 
-  protected async find(
-    model: any,
-    query: any = {},
-    options: any = {}
-  ): Promise<any> {
+  protected async find<T>(
+    model: mongoose.Model,
+    query: object = {},
+    options: ServiceOptionsInterface = {}
+  ): Promise<PaginationInterface<T>> {
     const page = Math.abs(options.page) || 1;
     const total = await this.count(model, query);
     const totalPages = Math.ceil(total / options.limit);
@@ -44,11 +69,11 @@ class Service {
     return q;
   }
 
-  protected findOne(
-    model: any,
-    query: any,
-    options: any = {}
-  ): Promise<any> {
+  protected findOne<T>(
+    model: mongoose.Model,
+    query: object,
+    options: ServiceOptionsInterface = {}
+  ): Promise<T> {
     const { select, populate } = options;
     return model
       .findOne(query)
@@ -60,13 +85,13 @@ class Service {
       });
   }
 
-  protected updateOne(
-    model: any,
-    query: any,
-    fields: any,
-    options: any,
-    populate: any = {}
-  ): Promise<any> {
+  protected updateOne<T>(
+    model: mongoose.Model,
+    query: object,
+    fields: T,
+    options: object,
+    populate: PopulateInterface[] | PopulateInterface
+  ): Promise<T> {
     return model
       .findOneAndUpdate(query, fields, options)
       .populate(populate)
@@ -75,11 +100,11 @@ class Service {
     });
   }
 
-  protected findById(
-    model: any,
+  protected findById<T>(
+    model: mongoose.Model,
     id: string,
-    options: any = {}
-  ): Promise<any> {
+    options: ServiceOptionsInterface = {}
+  ): Promise<T> {
     const { select, populate } = options;
     return model
       .findById(id)
@@ -91,9 +116,9 @@ class Service {
   }
 
   protected count(
-    model: any,
-    query: any
-  ): Promise<any> {
+    model: mongoose.Model,
+    query: object
+  ): Promise<number> {
     return model.countDocuments(query).catch(err => {
       throw err;
     });
