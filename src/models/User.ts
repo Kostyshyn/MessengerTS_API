@@ -8,23 +8,30 @@ export const ObjectId = mongoose.Schema.Types.ObjectId;
 const MODEL_NAME = 'User';
 
 export interface UserModelInterface extends mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
   role?: number;
   first_name: string;
-  last_name: string;
+  last_name?: string;
   username: string;
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
   reset_token?: string;
-  profile_image?: ImageModelInterface;
+  profile_image: ImageModelInterface;
   online?: boolean;
   url?: string;
-  last_seen?: any;
+  last_seen?: Date;
 }
 
 const Schema = mongoose.Schema;
 
 const { PRIVATE_ACCESS_USER } = process.env;
 const { NAME, USERNAME } = config.VALIDATION[MODEL_NAME];
+
+function lastNameValidator(value): boolean | void {
+  if (value) {
+    return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
+  }
+};
 
 const Model = Schema({
   role: {
@@ -87,14 +94,7 @@ const Model = Schema({
     timestamps: true
 });
 
-function lastNameValidator(value) {
-  if (value) {
-    return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
-  }
-};
-
-Model.pre('save', async function(): Promise<any> {
-
+Model.pre('save', async function(): Promise<void> {
   if (this.isNew) {
     const defImage = await getDefaultImage();
     this.profile_image = defImage;
@@ -106,7 +106,6 @@ Model.pre('save', async function(): Promise<any> {
     this.password = hash;
     this.url = '@' + this.username;
   }
-
 });
 
 const User = mongoose.model<UserModelInterface>(MODEL_NAME, Model);

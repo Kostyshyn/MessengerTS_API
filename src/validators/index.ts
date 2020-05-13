@@ -1,11 +1,10 @@
 import * as express from 'express';
-import { check, param, validationResult } from 'express-validator';
+import { check, validationResult } from 'express-validator';
 import { ValidationError } from '@error_handlers/errors';
 import rules from '@validators/rules';
 import { DEF_MIDDLEWARE } from '@routes/index';
 import config from '@config/index';
 const { User } = config.VALIDATION;
-const { ENTITIES, TYPES } = config.FILES;
 
 // User fields
 
@@ -81,16 +80,6 @@ export const passwordReg = check('password')
   })
   .withMessage(`Must be between ${User.PASSWORD.MIN_LENGTH} and ${User.PASSWORD.MAX_LENGTH} characters long`);
 
-// File
-
-export const uploadEntity = param('entity')
-  .isIn(ENTITIES)
-  .withMessage('This upload entity is not allowed')
-
-export const uploadType = param('type')
-  .isIn(TYPES)
-  .withMessage('This upload type is not allowed')
-
 // add all the rules here
 
 const rulesHash = {
@@ -100,15 +89,12 @@ const rulesHash = {
   username,
   email,
   password,
-  passwordReg,
-  uploadEntity,
-  uploadType
+  passwordReg
 };
 
 export const formatErrors = errors => {
   const result = {};
   errors.map(error => {
-    const errors = {};
     if (result[error.param]) {
       result[error.param].push(error.msg)
     } else {

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { RouteItem } from '@routes/index';
+import { RouteItem, MFunction } from '@routes/index';
 import { notFoundErrorHandler, errorHandler } from '@error_handlers/index';
 import { privateFolder } from '@middlewares/storage';
 
@@ -10,7 +10,7 @@ class App {
 
   constructor(
       private database: any,
-      private middlewares: any[],
+      private middlewares: MFunction[],
       private routes: RouteItem[]
     ) {
     this.express = express();

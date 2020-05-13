@@ -1,9 +1,7 @@
 import * as multer from 'multer';
-import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
-import * as shell from 'shelljs';
 import config from '@config/index';
+import { checkDir } from '@helpers/file';
 import { ValidationError } from '@error_handlers/errors';
 
 const privateFolderPath: string = path.join(process.cwd(), 'storage');
@@ -11,32 +9,38 @@ const privateFolderPath: string = path.join(process.cwd(), 'storage');
 // now for images only
 
 const {
+  MAX_FILE_SIZE_MB,
   IMAGE
 } = config.FILES;
 
 class UploadService {
 
+  // types: image, video, application
+
   private fileFiltersHash = {
     image: IMAGE.ACCEPT_FILES
-  }
-
-  private fileLimitsHash = {
-    image: IMAGE.MAX_FILE_SIZE_MB
   }
 
   private defaultExtHash = {
     image: IMAGE.DEF_EXT
   }
 
-  private fileLimits(type: string): any {
-    return {
-      fileSize: 1024 * 1024 * this.fileLimitsHash[type]
-    };
+  private fileLimits = {
+    fileSize: 1024 * 1024 * MAX_FILE_SIZE_MB
   }
 
-  private fileFilters(type: string): any {
-    const mimetypes = this.fileFiltersHash[type];
+  private getType (file: any): string {
+    if (file) {
+      const { mimetype } = file;
+      return mimetype.split('/')[0];
+    }
+    return '';
+  }
+
+  private fileFilters(): any {
     return (req, file, cb) => {
+      const type = this.getType(file);
+      const mimetypes = this.fileFiltersHash[type];
       if (mimetypes.includes(file.mimetype)){
         cb(null, true);
       } else {
@@ -47,22 +51,16 @@ class UploadService {
     };
   }
 
-  private destination(req, file, cb): any {
-    const { id } = req.decoded;
-    const { entity, type, pathId } = req.params;
-    const directory = path.normalize(`${privateFolderPath}/${entity}/${pathId || id}/${type}`);
-    try {
-      fs.statSync(directory);
-    } catch (err) {
-      shell.mkdir('-p', directory);
-    }
+  private destination(req, file, cb): void {
+    const directory = path.normalize(`${privateFolderPath}/tmp`);
+    checkDir(directory);
     cb(null, directory);
   }
 
-  private filename(context): any {
-    return function (req, file, cb): any {
-      const { type } = req.params;
-      const ext = path.extname(file.originalname) || `.${context.defaultExtHash[type]}`;
+  private filename(): any {
+    return (req, file, cb) => {
+      const type = this.getType(file);
+      const ext = path.extname(file.originalname) || `.${this.defaultExtHash[type]}`;
       const fileName = `${ Date.now() }${ext}`;
       cb(null, fileName);
     };
@@ -70,14 +68,14 @@ class UploadService {
 
   private storage = multer.diskStorage({
     destination: this.destination,
-    filename: this.filename(this)
+    filename: this.filename()
   })
 
-  public uploadFile(type: string): any {
+  public uploadFile(): any {
     return multer({
       storage: this.storage,
-      fileFilter: this.fileFilters(type),
-      limits: this.fileLimits(type)
+      fileFilter: this.fileFilters(),
+      limits: this.fileLimits
     });
   }
 

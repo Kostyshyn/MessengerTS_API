@@ -10,7 +10,6 @@ import App from '@root/server';
 import DataBase from '@database/index';
 import { resolve } from 'path';
 import { config } from 'dotenv';
-import appConfig from '@config/index';
 
 import middlewares from '@middlewares/index';
 import routes from '@routes/index';
@@ -25,37 +24,7 @@ if (!fs.existsSync(envFile)) {
 
 config({ path: resolve(__dirname, `../.env.${ NODE_ENV }`) });
 
-if (NODE_ENV === 'production') {
-  if (cluster.isMaster) {
-    const cpuCount = os.cpus().length;
-
-    // Create a worker for each CPU
-    for (let i = 0; i < cpuCount; i++) {
-      cluster.fork();
-    }
-
-  } else {
-    runServer();
-  }
-} else {
-  runServer();
-}
-
-function runServer(): void {
-
-  const { DB_HOST, DB_URL, PORT } = process.env;
-  const database = new DataBase(`${ DB_HOST }${ DB_URL }`);
-  const port = normalizePort(PORT || 8080);
-  const app = new App(database, middlewares, routes).express;
-  const server = http.createServer(app);
-
-  server.listen(port, () => {
-    console.log(colors.green('Server listenning on:'), ip.address() + ':' + port, '--- process: ' + process.pid);
-  });
-  server.on('error', onError(port));
-};
-
-function normalizePort(val): any {
+function normalizePort(val): number | boolean {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -96,3 +65,33 @@ function onError(port) {
     }
   }
 };
+
+function runServer(): void {
+
+  const { DB_HOST, DB_URL, PORT } = process.env;
+  const database = new DataBase(`${ DB_HOST }${ DB_URL }`);
+  const port = normalizePort(PORT || 8080);
+  const app = new App(database, middlewares, routes).express;
+  const server = http.createServer(app);
+
+  server.listen(port, () => {
+    console.log(colors.green('Server listenning on:'), ip.address() + ':' + port, '--- process: ' + process.pid);
+  });
+  server.on('error', onError(port));
+};
+
+if (NODE_ENV === 'production') {
+  if (cluster.isMaster) {
+    const cpuCount = os.cpus().length;
+
+    // Create a worker for each CPU
+    for (let i = 0; i < cpuCount; i++) {
+      cluster.fork();
+    }
+
+  } else {
+    runServer();
+  }
+} else {
+  runServer();
+}

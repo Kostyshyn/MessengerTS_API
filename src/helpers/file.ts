@@ -1,9 +1,11 @@
 import * as fs from 'fs';
-import * as util from 'util';
 import * as path from 'path';
 import * as shell from 'shelljs';
 
-export const moveFile = (oldPath, newPath): Promise<any> => {
+export const moveFile = (
+    oldPath: string,
+    newPath: string
+  ): Promise<any> => {
   const from = path.normalize(oldPath);
   const to = path.normalize(newPath);
   return new Promise((resolve, reject) => {
@@ -30,7 +32,7 @@ export const deleteFile = (filePath: string): Promise<any> => {
   });
 };
 
-export const checkDir = (filePath: string): any => {
+export const checkDir = (filePath: string): void => {
   const p = path.normalize(filePath);
   try {
     fs.statSync(p);

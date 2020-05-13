@@ -3,32 +3,18 @@ import UserService from '@services/User/index';
 import UploadService from '@services/Upload/index';
 import FileService from '@services/File/index';
 import { ValidationError } from '@error_handlers/errors';
-import * as util from 'util';
 import config from '@config/index';
 import { truncate } from '@helpers/general';
+import { resizeImage } from '@helpers/resizeImage';
+import { moveFile, deleteFile, checkDir } from '@helpers/file';
 const { Image } = config.VALIDATION;
+
+import * as path from 'path';
 
 class UploadController extends Controller {
 
   constructor() {
     super();
-  }
-
-  private uploadTypesHash = {
-    image: this.uploadProfileImage
-  }
-
-  private saveFileToStorage(req, res) {
-    const { type } = req.params;
-    const uploadMiddleware = UploadService.uploadFile(type);
-    const uploadPromise = util.promisify(uploadMiddleware.any());
-    return uploadPromise(req, res);
-  }
-
-  public async uploadFile(req, res, next) {
-    const { type } = req.params;
-    await this.saveFileToStorage(req, res);
-    return this.uploadTypesHash[type](req, res, next);
   }
 
   public async uploadProfileImage(req, res, next) {
@@ -43,16 +29,22 @@ class UploadController extends Controller {
           mimetype,
           size
         } = file;
-        const path = `storage/user/${_id}/image/${file.filename}`;
+        const imagePath = `storage/user/${_id}/image/128_128_${name}`; // for test
         const image = await FileService.createImage({
           original_name,
           name,
           mimetype,
           type: 'profile_image',
           user: { _id },
-          path,
+          path: imagePath,
           size
         });
+        const privateFolderPath: string = path.join(process.cwd(), 'storage');
+        const tmp = `${privateFolderPath}/tmp/${name}`;
+        const userFolder = `${privateFolderPath}/user/${_id}/image`;
+        checkDir(userFolder);
+        await resizeImage(tmp, userFolder);
+        // await moveFile(tmp, `${userFolder}/${name}`);
         const { user: updatedUser } = await UserService.updateUserFields(_id, {
           profile_image: {
             _id: image._id.toString()

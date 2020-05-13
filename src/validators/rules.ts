@@ -17,14 +17,8 @@ const updateInfo = [
   'usernameReg'
 ];
 
-const fileUpload = [
-  'uploadEntity',
-  'uploadType'
-];
-
 export default {
   register,
   login,
-  updateInfo,
-  fileUpload
+  updateInfo
 };

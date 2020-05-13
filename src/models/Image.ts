@@ -1,20 +1,20 @@
 import * as mongoose from 'mongoose';
 import config from '@config/index';
-import { UserModelInterface } from '@models/User';
 
-const { DEF_PROFILE_IMG } = config.FILES.IMAGE;
+const { PROFILE_IMG } = config.DEFAULTS;
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'Image';
 
 export interface ImageModelInterface extends mongoose.Document {
+  _id?: mongoose.Schema.Types.ObjectId;
   original_name?: string;
   name?: string;
   mimetype?: string;
   type?: string;
   user?: mongoose.Types.ObjectId;
-  path?: string;
+  path: string;
   size?: number;
 }
 
@@ -59,7 +59,7 @@ const Image = mongoose.model<ImageModelInterface>(MODEL_NAME, Model);
 
 export { Image };
 
-export const getDefaultImage = async () => {
+export const getDefaultImage = async (): Promise<ImageModelInterface> => {
   const findDefImage: ImageModelInterface = await Image.findOne({
     type: 'default'
   });
@@ -69,7 +69,7 @@ export const getDefaultImage = async () => {
   } else {
     return await Image.create({
       type: 'default',
-      path: DEF_PROFILE_IMG
+      path: PROFILE_IMG
     });
   }
 };
