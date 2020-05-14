@@ -68,8 +68,16 @@ function onError(port) {
 
 function runServer(): void {
 
-  const { DB_HOST, DB_URL, PORT } = process.env;
-  const database = new DataBase(`${ DB_HOST }${ DB_URL }`);
+  const {
+    DB_HOST,
+    DB_USERNAME,
+    DB_PASSWORD,
+    DB_URL,
+    DB_NAME,
+    PORT
+  } = process.env;
+  const dbAuth = `${DB_HOST}${DB_USERNAME}:${DB_PASSWORD}${DB_URL}/${DB_NAME}`
+  const database = new DataBase(`${dbAuth}`);
   const port = normalizePort(PORT || 8080);
   const app = new App(database, middlewares, routes).express;
   const server = http.createServer(app);

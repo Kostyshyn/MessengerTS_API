@@ -10,9 +10,9 @@ export default function(
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   const { SECRET_AUTH_KEY } = process.env;
   if (token) {
-    jwt.verify(token, SECRET_AUTH_KEY, (err, decoded): express.NextFunction => {      
+    jwt.verify(token, SECRET_AUTH_KEY, (err, decoded): express.NextFunction => {
       if (err) {
-        return next(new TokenVerificationError('Token verification failed'));    
+        return next(new TokenVerificationError('Token verification failed'));
       }
       req.decoded = decoded;
       return next();

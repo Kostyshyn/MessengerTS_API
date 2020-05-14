@@ -4,7 +4,7 @@ import { HttpException, ValidationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
-import { validatePassword } from '@helpers/auth';
+import { generateToken, validatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
 
@@ -12,13 +12,12 @@ class AuthService extends Service {
     super();
   }
 
-  public async login(
-      user: UserModelInterface
-    ): Promise<UserModelInterface> {
+  public async login(user: UserModelInterface): Promise<any> {
 
     const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
     }, {
+      select: `${ userSelfFields.join(' ') } password`,
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]
@@ -39,15 +38,14 @@ class AuthService extends Service {
     throw new ValidationError({
       username: [`${user.username} not found`]
     });
+
   }
 
-  public async register(
-      user: UserModelInterface
-    ): Promise<UserModelInterface> {
+  public async register(user: UserModelInterface): Promise<any> {
 
     const findUser = await this.findOne<UserModelInterface>(User, {
       $or: [
-        { 'username': user.username }, 
+        { 'username': user.username },
         { 'email': user.email }
       ]
     });
@@ -63,12 +61,12 @@ class AuthService extends Service {
       const userRecord = await this.create(User, user);
 
       return {
-        ...showFields(findUser, [...userSelfFields, '_id']),
+        ...showFields(userRecord, [...userSelfFields, '_id']),
         profile_image: showFields(userRecord.profile_image, userImageFields)
       };
     } catch (err) {
       throw new HttpException(500, err.message);
-    }   
+    }
   }
 }
 
