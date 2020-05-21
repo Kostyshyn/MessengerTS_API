@@ -20,7 +20,7 @@ export const resizeImage = (
 	return Promise
 		.all(CROP_SIZES.map(size => {
 		  const name = path.basename(imagePath);
-		  const resized = `${destination}/${size}_${size}_${name}`
+		  const resized = `${destination}/${size}_${size}_${name}`;
 		  return resize(size, imagePath, resized);
 		})
 	);
