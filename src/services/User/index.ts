@@ -1,14 +1,20 @@
 import config from '@config/index';
-import { User, UserModelInterface } from '@models/User';
-import Service from '@services/index';
+import {
+  User,
+  UserModelInterface,
+  UserUpdateFieldsInterface
+} from '@models/User';
+import Service, {PaginationInterface, ServiceOptionsInterface} from '@services/index';
 import {
   NotFoundError,
-  HttpException,
   TokenVerificationError,
   ValidationError
 } from '@error_handlers/errors';
-import { showFields } from '@data_lists/index';
-import { userSelf as userSelfFields, user as userFields, userList as userListFields } from '@data_lists/user';
+import {
+  userSelf as userSelfFields,
+  user as userFields,
+  userList as userListFields
+} from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
 const { PAGINATION } = config;
 
@@ -18,9 +24,11 @@ class UserService extends Service {
     super();
   }
 
-  public async getUser(id: string): Promise<any> {
+  public async getUser(
+      id: string
+  ): Promise<UserModelInterface> {
 
-    const user = await this.findById(User, id, {
+    const user = await this.findById<UserModelInterface>(User, id, {
       select: userSelfFields.join(' '),
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
@@ -28,15 +36,16 @@ class UserService extends Service {
     });
 
     if (user) {
-      return {
-        user
-      };
+      return user;
     }
 
     throw new TokenVerificationError('Token verification failed')
   }
 
-  public async updateUser(id: string, fields: any): Promise<any> {
+  public async updateUser(
+      id: string,
+      fields: object
+  ): Promise<UserModelInterface> {
 
     const query = { _id: id };
     const options = { 'fields': userSelfFields.join(' '), new: true };
@@ -44,20 +53,27 @@ class UserService extends Service {
       { path: 'profile_image', select: userImageFields.join(' ') }
     ];
 
-    const updatedUser = await this.updateOne(User, query, fields, options, populate);
+    const updatedUser = await this.updateOne<UserModelInterface>(
+        User,
+        query,
+        fields,
+        options,
+        populate
+    );
 
     if (updatedUser) {
-      return {
-        user: updatedUser
-      };
+      return updatedUser;
     }
 
     throw new TokenVerificationError('Token verification failed')
   }
 
-  public async updateUserFields(id: string, fields: any): Promise<any> {
+  public async updateUserFields(
+      id: string,
+      fields: UserUpdateFieldsInterface
+  ): Promise<UserModelInterface> {
     if (fields.hasOwnProperty('username')) {
-      const findUser = await this.findOne(User, {
+      const findUser = await this.findOne<UserModelInterface>(User, {
         '_id': {
           $ne: id
         },
@@ -79,8 +95,11 @@ class UserService extends Service {
     });
   }
 
-  public async getUsers(id: string, options: any): Promise<any> {
-    const { keyword } = options;
+  public async getUsers(
+      id: string,
+      keyword: string,
+      options: ServiceOptionsInterface
+  ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const regex = new RegExp(keyword, 'i');
     const query = {
@@ -93,7 +112,7 @@ class UserService extends Service {
         { 'last_name': regex }
       ]
     };
-    const users = await this.find(User, query, {
+    return await this.find<UserModelInterface>(User, query, {
       ...options,
       select: userListFields.join(' '),
       limit,
@@ -101,13 +120,11 @@ class UserService extends Service {
         path: 'profile_image', select: userImageFields.join(' ')
       }
     });
-
-    return users;
   }
 
-  public async getUserByUrl(url: string): Promise<any> {
+  public async getUserByUrl(url: string): Promise<UserModelInterface> {
 
-    const user = await this.findOne(User, { url }, {
+    const user = await this.findOne<UserModelInterface>(User, { url }, {
       select: userFields.join(' '),
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
@@ -115,9 +132,7 @@ class UserService extends Service {
     });
 
     if (user) {
-      return {
-        user
-      };
+      return user;
     }
 
     throw new NotFoundError(`${ url } not found`);

@@ -88,7 +88,7 @@ class Service {
   protected updateOne<T>(
     model: mongoose.Model,
     query: object,
-    fields: T,
+    fields: object,
     options: object,
     populate: PopulateInterface[] | PopulateInterface
   ): Promise<T> {

@@ -46,7 +46,7 @@ class UploadController extends Controller {
         await deleteFile(tmp); // TODO: fix bug with file deleting
         // await moveFile(tmp, `${userFolder}/${name}`);
 
-        const { user: updatedUser } = await UserService.updateUserFields(_id, {
+        const updatedUser = await UserService.updateUserFields(_id, {
           profile_image: {
             _id: image._id.toString()
           }

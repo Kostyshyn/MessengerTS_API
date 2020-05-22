@@ -18,7 +18,7 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { id } = req.decoded;
-      const { user } = await UserService.getUser(id);
+      const user = await UserService.getUser(id);
       res.json({ user });
     } catch (err) {
       next(err);
@@ -33,7 +33,7 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const { first_name, last_name, username } = req.body;
-      const { user } = await UserService.updateUserFields(id, {
+      const user = await UserService.updateUserFields(id, {
         first_name,
         last_name,
         username
@@ -52,10 +52,9 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const { page, limit, keyword } = req.query;
-      const users = await UserService.getUsers(id, {
+      const users = await UserService.getUsers(id, keyword, {
         page,
-        limit,
-        keyword
+        limit
       });
       res.json(users);
     } catch (err) {
@@ -70,7 +69,7 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { url } = req.params;
-      const { user } = await UserService.getUserByUrl(url);
+      const user = await UserService.getUserByUrl(url);
       res.json({ user });
     } catch (err) {
       next(err);

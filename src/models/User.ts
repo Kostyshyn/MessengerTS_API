@@ -22,6 +22,14 @@ export interface UserModelInterface extends mongoose.Document {
   last_seen?: Date;
 }
 
+export interface UserUpdateFieldsInterface {
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  profile_image?: ImageModelInterface;
+  url?: string;
+}
+
 const Schema = mongoose.Schema;
 
 const { PRIVATE_ACCESS_USER } = process.env;

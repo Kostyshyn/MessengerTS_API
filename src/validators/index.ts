@@ -2,7 +2,7 @@ import * as express from 'express';
 import { check, validationResult } from 'express-validator';
 import { ValidationError } from '@error_handlers/errors';
 import rules from '@validators/rules';
-import { DEF_MIDDLEWARE } from '@routes/index';
+import { DEF_MIDDLEWARE, MFunction } from '@routes/index';
 import config from '@config/index';
 const { User } = config.VALIDATION;
 
@@ -92,7 +92,7 @@ const rulesHash = {
   passwordReg
 };
 
-export const formatErrors = errors => {
+export const formatErrors = (errors: any): object => {
   const result = {};
   errors.map(error => {
     if (result[error.param]) {
@@ -104,18 +104,22 @@ export const formatErrors = errors => {
   return result;
 };
 
-export const validatorFn = (req: express.Request, res: express.Response, next: express.NextFunction): express.NextFunction => {
+export const validatorFn = (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+): express.NextFunction => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    const errors = result.array()
+    const errors = result.array();
     return next(new ValidationError(formatErrors(errors)));
   }
 
   return next();
 };
 
-export const validate = type => {
+export const validate = (type: string): MFunction[] => {
   if (type && (rules && rules[type])) {
     const validator = rules[type].map(rule => {
       if (rulesHash[rule]) {
@@ -124,6 +128,6 @@ export const validate = type => {
     });
     return [...validator, validatorFn];
   }
-  return [DEF_MIDDLEWARE];
+  return DEF_MIDDLEWARE;
 };
 

@@ -4,7 +4,7 @@ import { HttpException, ValidationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
-import { generateToken, validatePassword } from '@helpers/auth';
+import { validatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
 
@@ -12,7 +12,7 @@ class AuthService extends Service {
     super();
   }
 
-  public async login(user: UserModelInterface): Promise<any> {
+  public async login(user: UserModelInterface): Promise<UserModelInterface> {
 
     const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
@@ -41,7 +41,7 @@ class AuthService extends Service {
 
   }
 
-  public async register(user: UserModelInterface): Promise<any> {
+  public async register(user: UserModelInterface): Promise<UserModelInterface> {
 
     const findUser = await this.findOne<UserModelInterface>(User, {
       $or: [

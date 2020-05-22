@@ -14,7 +14,7 @@ export interface ImageModelInterface extends mongoose.Document {
   mimetype?: string;
   type?: string;
   user?: mongoose.Types.ObjectId;
-  path: string;
+  path?: string;
   size?: number;
 }
 

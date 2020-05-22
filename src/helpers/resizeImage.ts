@@ -10,7 +10,7 @@ const resize = (
 		size: number,
 		imagePath: string,
 		destination: string
-	): any => {
+	): Promise<any> => {
 	return sharp(imagePath)
 		.resize(size, size)
   		.toFile(destination);
