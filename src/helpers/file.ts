@@ -1,11 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
+import ErrnoException = NodeJS.ErrnoException;
+
+export type fileAction = ErrnoException | null | boolean;
 
 export const moveFile = (
     oldPath: string,
     newPath: string
-  ): Promise<any> => {
+  ): Promise<fileAction> => {
   const from = path.normalize(oldPath);
   const to = path.normalize(newPath);
   return new Promise((resolve, reject) => {
@@ -19,7 +22,7 @@ export const moveFile = (
   });
 };
 
-export const deleteFile = (filePath: string): Promise<any> => {
+export const deleteFile = (filePath: string): Promise<fileAction> => {
   const p = path.normalize(filePath);
   return new Promise((resolve, reject) => {
     fs.unlink(p, (err) => {
@@ -40,21 +43,3 @@ export const checkDir = (filePath: string): void => {
     shell.mkdir('-p', p);
   }
 };
-
-// export const copyFile = (from, to): Promise<any> => {
-
-// };
-
-//     function copy() {
-//         var readStream = fs.createReadStream(oldPath);
-//         var writeStream = fs.createWriteStream(newPath);
-
-//         readStream.on('error', callback);
-//         writeStream.on('error', callback);
-
-//         readStream.on('close', function () {
-//             fs.unlink(oldPath, callback);
-//         });
-
-//         readStream.pipe(writeStream);
-//     }

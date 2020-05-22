@@ -1,6 +1,5 @@
 import Controller from '@controllers/index';
 import UserService from '@services/User/index';
-import UploadService from '@services/Upload/index';
 import FileService from '@services/File/index';
 import { ValidationError } from '@error_handlers/errors';
 import config from '@config/index';
@@ -37,14 +36,16 @@ class UploadController extends Controller {
           type: 'profile_image',
           user: { _id },
           path: imagePath,
-          size
+          size // TODO: BUG should be the size of the resized image
         });
         const privateFolderPath: string = path.join(process.cwd(), 'storage');
         const tmp = `${privateFolderPath}/tmp/${name}`;
         const userFolder = `${privateFolderPath}/user/${_id}/image`;
         checkDir(userFolder);
         await resizeImage(tmp, userFolder);
+        await deleteFile(tmp); // TODO: fix bug with file deleting
         // await moveFile(tmp, `${userFolder}/${name}`);
+
         const { user: updatedUser } = await UserService.updateUserFields(_id, {
           profile_image: {
             _id: image._id.toString()

@@ -1,7 +1,10 @@
 import * as sharp from 'sharp';
 import * as path from 'path';
 import config from '@config/index';
+
 const { CROP_SIZES } = config.FILES.IMAGE;
+
+sharp.cache(false);
 
 const resize = (
 		size: number,
@@ -10,7 +13,7 @@ const resize = (
 	): any => {
 	return sharp(imagePath)
 		.resize(size, size)
-  	.toFile(destination);
+  		.toFile(destination);
 };
 
 export const resizeImage = (
