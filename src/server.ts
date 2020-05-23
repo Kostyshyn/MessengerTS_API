@@ -6,7 +6,7 @@ import { privateFolder } from '@middlewares/storage';
 class App {
 
   public express;
-  private privateFolder;
+  private readonly privateFolder;
 
   constructor(
       private database: any,
@@ -25,7 +25,7 @@ class App {
     database.setup();
   }
 
-  private mountMiddlewares(middlewares): void {
+  private mountMiddlewares(middlewares: MFunction[]): void {
     for (const i in middlewares) {
       this.express.use(middlewares[i]);
     }

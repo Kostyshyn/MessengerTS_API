@@ -19,9 +19,9 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const user = await UserService.getUser(id);
-      res.json({ user });
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -38,9 +38,9 @@ class UserController extends Controller {
         last_name,
         username
       });
-      res.json({ user });
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -56,9 +56,9 @@ class UserController extends Controller {
         page,
         limit
       });
-      res.json(users);
+      return res.json(users);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -70,9 +70,9 @@ class UserController extends Controller {
     try {
       const { url } = req.params;
       const user = await UserService.getUserByUrl(url);
-      res.json({ user });
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -84,9 +84,9 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const images = await FileService.getUserImages(id);
-      res.json({ images });
+      return res.json({ images });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

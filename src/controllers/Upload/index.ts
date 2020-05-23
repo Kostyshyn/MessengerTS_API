@@ -64,7 +64,7 @@ class UploadController extends Controller {
           file: ['File too large']
         }));
       }
-      next(err);
+      return next(err);
     }
   }
 

@@ -20,9 +20,9 @@ class AuthController extends Controller {
       const token = generateToken({
         id: user._id
       });
-      res.json({ user, token });
+      return res.json({ user, token });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -36,9 +36,9 @@ class AuthController extends Controller {
       const token = generateToken({
         id: user._id
       });
-      res.json({ user, token });
+      return res.json({ user, token });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }
