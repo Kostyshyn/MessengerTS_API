@@ -1,8 +1,6 @@
 import * as mongoose from 'mongoose';
 import config from '@config/index';
 
-const { PROFILE_IMG } = config.DEFAULTS;
-
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'Image';
@@ -11,11 +9,20 @@ export interface ImageModelInterface extends mongoose.Document {
   _id?: mongoose.Schema.Types.ObjectId;
   original_name?: string;
   name?: string;
-  mimetype?: string;
+  format?: string;
   type?: string;
   user?: mongoose.Types.ObjectId;
   path?: string;
-  size?: number;
+  sizes?: ResizedImageInterface[];
+}
+
+export interface ResizedImageInterface {
+  format?: string;
+  width: number;
+  height: number;
+  channels?: number;
+  premultiplied?: boolean;
+  size: number;
 }
 
 const Schema = mongoose.Schema;
@@ -33,7 +40,7 @@ const Model = Schema({
     trim: true,
     default: ''
   },
-  mimetype: {
+  format: {
     type: String,
     default: ''
   },
@@ -50,7 +57,10 @@ const Model = Schema({
     unique: true,
     trim: true
   },
-  size: Number
+  sizes: {
+    type: Array,
+    default: []
+  }
 }, {
   timestamps: true
 });
@@ -58,18 +68,3 @@ const Model = Schema({
 const Image = mongoose.model<ImageModelInterface>(MODEL_NAME, Model);
 
 export { Image };
-
-export const getDefaultImage = async (): Promise<ImageModelInterface> => {
-  const findDefImage: ImageModelInterface = await Image.findOne({
-    type: 'default'
-  });
-
-  if (findDefImage) {
-    return findDefImage;
-  } else {
-    return await Image.create({
-      type: 'default',
-      path: PROFILE_IMG
-    });
-  }
-};

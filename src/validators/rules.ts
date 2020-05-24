@@ -17,8 +17,14 @@ const updateInfo = [
   'usernameReg'
 ];
 
+const image = [
+  'original_name',
+  'files'
+];
+
 export default {
   register,
   login,
-  updateInfo
+  updateInfo,
+  image
 };

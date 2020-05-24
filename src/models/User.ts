@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import config from '@config/index';
-import { ImageModelInterface, getDefaultImage } from '@models/Image';
+import { ImageModelInterface } from '@models/Image';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -96,18 +96,13 @@ const Model = Schema({
   },
   last_seen: {
     type: Date,
-    default: Date.now   
+    default: Date.now
   }
 }, {
     timestamps: true
 });
 
 Model.pre('save', async function(): Promise<void> {
-  if (this.isNew) {
-    const defImage = await getDefaultImage();
-    this.profile_image = defImage;
-  }
-
   if (this.isModified('password') || this.isModified('username')) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(this.password, salt);

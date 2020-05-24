@@ -4,7 +4,7 @@ import AuthController from '@controllers/Auth';
 import UserController from '@controllers/User';
 import UploadController from '@controllers/Upload';
 
-import { validate } from '@validators/index';
+import { validate } from '@root/validators';
 
 export default [
   {
@@ -38,7 +38,8 @@ export default [
             method: 'post',
             middleware: [
               protectedRoute,
-              uploadFile
+              uploadFile,
+              validate('image')
             ],
             controller: UploadController.uploadProfileImage
           }

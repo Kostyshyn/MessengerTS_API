@@ -1,9 +1,8 @@
 import * as express from 'express';
+import { R } from '@root/routes';
+import Controller from '@controllers/index';
 import UserService from '@services/User/index';
 import FileService from '@services/File/index';
-import Controller from '@controllers/index';
-
-type R = express.Response | express.NextFunction;
 
 class UserController extends Controller {
 

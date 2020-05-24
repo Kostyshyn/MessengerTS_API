@@ -61,8 +61,7 @@ class AuthService extends Service {
       const userRecord = await this.create(User, user);
 
       return {
-        ...showFields(userRecord, [...userSelfFields, '_id']),
-        profile_image: showFields(userRecord.profile_image, userImageFields)
+        ...showFields(userRecord, [...userSelfFields, '_id'])
       };
     } catch (err) {
       throw new HttpException(500, err.message);

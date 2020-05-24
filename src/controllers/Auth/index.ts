@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { R } from '@routes/index';
-import AuthService from '@services/Auth/index';
+import { R } from '@root/routes';
 import Controller from '@controllers/index';
+import AuthService from '@services/Auth/index';
 import { generateToken } from '@helpers/auth';
 
 class AuthController extends Controller {
