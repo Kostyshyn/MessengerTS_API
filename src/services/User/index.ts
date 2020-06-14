@@ -101,12 +101,13 @@ class UserService extends Service {
       options: ServiceOptionsInterface
   ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
-    // TODO: 500 Invalid regular expression: /A\/: \ at end of pattern
-    const regex = new RegExp(keyword, 'i');
+    const sanitized = keyword.replace(/\\/g, '').trim();
+    const regex = new RegExp(sanitized, 'i');
     const query = {
       '_id': {
         $ne: id
       },
+      // TODO: dynamic search fields
       $or: [
         { 'username': regex },
         { 'first_name': regex },

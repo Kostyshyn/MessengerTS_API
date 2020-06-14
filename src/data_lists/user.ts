@@ -27,5 +27,6 @@ export const userList = [
   'first_name',
   'last_name',
   'username',
+  'last_seen',
   'url'
 ];

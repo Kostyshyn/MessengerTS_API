@@ -50,10 +50,11 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { id } = req.decoded;
-      const { page, limit, keyword } = req.query;
+      const { page, limit, keyword, sort } = req.query;
       const users = await UserService.getUsers(id, keyword, {
         page,
-        limit
+        limit,
+        sort
       });
       return res.json(users);
     } catch (err) {
