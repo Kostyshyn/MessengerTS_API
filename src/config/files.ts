@@ -1,5 +1,5 @@
 export default {
-  MAX_FILE_SIZE_MB: 0.5,
+  MAX_FILE_SIZE_MB: 5,
   IMAGE: {
     ACCEPT_FILES: [
       'image/jpeg',
