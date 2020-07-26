@@ -1,5 +1,10 @@
 import * as express from 'express';
-import { HttpException, NotFoundError } from './errors';
+import * as multer from 'multer';
+import {
+  HttpException,
+  NotFoundError,
+  ValidationError
+} from './errors';
 import config from '@config/index';
 
 export const notFoundErrorHandler = (
@@ -17,17 +22,25 @@ export const notFoundErrorHandler = (
 
 
 export const errorHandler = (
-    err: HttpException,
+    error: HttpException,
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ): express.Response => {
+  let err;
+  if (error instanceof multer.MulterError) {
+    err = new ValidationError({
+      file: [error.message]
+    });
+  } else {
+    err = error
+  }
   const { NODE_ENV } = process.env;
   const { ERRORS_TO_LOG, ERRORS_TO_EXIT } = config.LOGGER;
   const name = err.name || 'HttpExceptionError';
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
-  const errors = err.errors
+  const errors = err.errors;
 
   if (NODE_ENV === 'development' && ERRORS_TO_LOG.includes(err.name)) {
     console.error(err);

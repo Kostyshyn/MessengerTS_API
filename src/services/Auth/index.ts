@@ -4,7 +4,7 @@ import { HttpException, ValidationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
-import { generateToken, validatePassword } from '@helpers/auth';
+import { validatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
 
@@ -12,9 +12,9 @@ class AuthService extends Service {
     super();
   }
 
-  public async login(user: UserModelInterface): Promise<any> {
+  public async login(user: UserModelInterface): Promise<UserModelInterface> {
 
-    const findUser = await this.findOne(User, {
+    const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
     }, {
       select: `${ userSelfFields.join(' ') } password`,
@@ -24,16 +24,9 @@ class AuthService extends Service {
     });
 
     if (findUser) {
-      const isValidPass = await validatePassword(findUser, user.password);
+      const isValidPass = await validatePassword(findUser.password, user.password);
       if (isValidPass) {
-        const token = generateToken({
-          id: findUser._id
-        });
-
-        return {
-          user: showFields(findUser, [...userSelfFields, '_id']),
-          token
-        };
+        return showFields(findUser, [...userSelfFields, '_id']);
       }
 
       throw new ValidationError({
@@ -48,11 +41,11 @@ class AuthService extends Service {
 
   }
 
-  public async register(user: UserModelInterface): Promise<any> {
+  public async register(user: UserModelInterface): Promise<UserModelInterface> {
 
-    const findUser = await this.findOne(User, {
+    const findUser = await this.findOne<UserModelInterface>(User, {
       $or: [
-        { 'username': user.username }, 
+        { 'username': user.username },
         { 'email': user.email }
       ]
     });
@@ -67,20 +60,12 @@ class AuthService extends Service {
     try {
       const userRecord = await this.create(User, user);
 
-      const token = generateToken({
-        id: userRecord._id
-      });
-
       return {
-        user: {
-          ...showFields(userRecord, [...userSelfFields, '_id']),
-          profile_image: showFields(userRecord.profile_image, userImageFields)
-        },
-        token
+        ...showFields(userRecord, [...userSelfFields, '_id'])
       };
     } catch (err) {
       throw new HttpException(500, err.message);
-    }   
+    }
   }
 }
 

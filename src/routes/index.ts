@@ -24,7 +24,7 @@ export const DEF_MIDDLEWARE: MFunction[] = [
   ): express.NextFunction => next()
 ];
 const DEF_METHOD = 'get';
-const DEF_CONTROLLER = notFoundErrorHandler;
+const DEF_CONTROLLER: CFunction = notFoundErrorHandler;
 const { ALLOWED_ROUTER_METHODS } = config;
 
 export interface RouteItem {
@@ -37,7 +37,10 @@ export interface RouteItem {
 
 const routes: RouteItem[] = routesConfig;
 
-function generateRoutes(router: express.Router, routes): express.Router {
+function generateRoutes(
+    router: express.Router,
+    routes: RouteItem[]
+): express.Router {
   for (const i in routes) {
     const { 
       method = DEF_METHOD, 

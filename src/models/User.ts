@@ -1,30 +1,45 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import config from '@config/index';
-import { ImageModelInterface, getDefaultImage } from '@models/Image';
+import { ImageModelInterface } from '@models/Image';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'User';
 
 export interface UserModelInterface extends mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
   role?: number;
   first_name: string;
-  last_name: string;
+  last_name?: string;
   username: string;
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
   reset_token?: string;
-  profile_image?: ImageModelInterface;
+  profile_image: ImageModelInterface;
   online?: boolean;
   url?: string;
-  last_seen?: any;
+  last_seen?: Date;
+}
+
+export interface UserUpdateFieldsInterface {
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  profile_image?: ImageModelInterface;
+  url?: string;
 }
 
 const Schema = mongoose.Schema;
 
 const { PRIVATE_ACCESS_USER } = process.env;
 const { NAME, USERNAME } = config.VALIDATION[MODEL_NAME];
+
+function lastNameValidator(value): boolean | void {
+  if (value) {
+    return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
+  }
+};
 
 const Model = Schema({
   role: {
@@ -81,32 +96,19 @@ const Model = Schema({
   },
   last_seen: {
     type: Date,
-    default: Date.now   
+    default: Date.now
   }
 }, {
     timestamps: true
 });
 
-function lastNameValidator(value) {
-  if (value) {
-    return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
-  }
-};
-
-Model.pre('save', async function(): Promise<any> {
-
-  if (this.isNew) {
-    const defImage = await getDefaultImage();
-    this.profile_image = defImage;
-  }
-
+Model.pre('save', async function(): Promise<void> {
   if (this.isModified('password') || this.isModified('username')) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(this.password, salt);
     this.password = hash;
     this.url = '@' + this.username;
   }
-
 });
 
 const User = mongoose.model<UserModelInterface>(MODEL_NAME, Model);

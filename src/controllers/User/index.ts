@@ -1,9 +1,8 @@
 import * as express from 'express';
+import { R } from '@root/routes';
+import Controller from '@controllers/index';
 import UserService from '@services/User/index';
 import FileService from '@services/File/index';
-import Controller from '@controllers/index';
-
-type R = express.Response | express.NextFunction;
 
 class UserController extends Controller {
 
@@ -18,10 +17,10 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { id } = req.decoded;
-      const { user } = await UserService.getUser(id);
-      res.json({ user });
+      const user = await UserService.getUser(id);
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -33,14 +32,14 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const { first_name, last_name, username } = req.body;
-      const { user } = await UserService.updateUserFields(id, {
+      const user = await UserService.updateUserFields(id, {
         first_name,
         last_name,
         username
       });
-      res.json({ user });
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -51,15 +50,15 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { id } = req.decoded;
-      const { page, limit, keyword } = req.query;
-      const users = await UserService.getUsers(id, {
+      const { page, limit, keyword, sort } = req.query;
+      const users = await UserService.getUsers(id, keyword, {
         page,
         limit,
-        keyword
+        sort
       });
-      res.json(users);
+      return res.json(users);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -70,10 +69,10 @@ class UserController extends Controller {
     ): Promise<R> {
     try {
       const { url } = req.params;
-      const { user } = await UserService.getUserByUrl(url);
-      res.json({ user });
+      const user = await UserService.getUserByUrl(url);
+      return res.json({ user });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -85,9 +84,9 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const images = await FileService.getUserImages(id);
-      res.json({ images });
+      return res.json({ images });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

@@ -3,9 +3,9 @@ import * as colors from 'colors';
 
 class DataBase {
 
-  public connection;
+  public connection: any;
 
-  constructor(private url: string) {
+  constructor(private uri: string) {
     mongoose.Promise = Promise;
   }
 
@@ -14,7 +14,7 @@ class DataBase {
       return this.connection;
     }
     try {
-      this.connection = await mongoose.connect(this.url, { 
+      this.connection = await mongoose.connect(this.uri, { 
         useNewUrlParser: true, 
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -27,12 +27,11 @@ class DataBase {
     }
   }
 
-  public seed(seeds): void {
-    if (this.connection) {
+  // public seed(seeds): void {
+  //   if (this.connection) {
       
-    }
-  }
-
+  //   }
+  // }
 }
 
 export default DataBase;

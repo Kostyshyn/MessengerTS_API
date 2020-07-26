@@ -1,114 +1,21 @@
 import * as express from 'express';
-import { check, param, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import { ValidationError } from '@error_handlers/errors';
+import { DEF_MIDDLEWARE, MFunction } from '@routes/index';
+import userValidators from './user';
+import imageValidators from './image';
 import rules from '@validators/rules';
-import { DEF_MIDDLEWARE } from '@routes/index';
-import config from '@config/index';
-const { User } = config.VALIDATION;
-const { ENTITIES, TYPES } = config.FILES;
-
-// User fields
-
-export const first_name = check('first_name')
-  .trim()
-  .escape()
-  .notEmpty()
-  .withMessage('First name is required')
-  .bail()
-  .matches(User.NAME.REGEX)
-  .withMessage('Valid characters are A-Z a-z 0-9')
-  .bail()
-  .isLength({
-    min: User.NAME.MIN_LENGTH,
-    max: User.NAME.MAX_LENGTH
-  })
-  .withMessage(`Must be between ${User.NAME.MIN_LENGTH} and ${User.NAME.MAX_LENGTH} characters long`);
-
-export const last_name = check('last_name')
-  .trim()
-  .if(value => (!!value))
-  .matches(User.NAME.REGEX)
-  .withMessage('Valid characters are A-Z a-z 0-9')
-  .bail()
-  .isLength({
-    min: User.NAME.MIN_LENGTH,
-    max: User.NAME.MAX_LENGTH
-  })
-  .withMessage(`Must be between ${User.NAME.MIN_LENGTH} and ${User.NAME.MAX_LENGTH} characters long`);
-
-export const usernameReg = check('username')
-  .trim()
-  .escape()
-  .notEmpty()
-  .withMessage('Username is required')
-  .bail()
-  .matches(User.USERNAME.REGEX)
-  .withMessage('Valid characters are A-Z a-z 0-9. You can also use underscore or period between characters')
-  .bail()
-  .isLength({
-    min: User.USERNAME.MIN_LENGTH,
-    max: User.USERNAME.MAX_LENGTH
-  })
-  .withMessage(`Must be between ${User.USERNAME.MIN_LENGTH} and ${User.USERNAME.MAX_LENGTH} characters long`);
-
-export const username = check('username')
-  .trim()
-  .escape()
-  .notEmpty()
-  .withMessage('Username is required')  
-
-export const email = check('email')
-  .notEmpty()
-  .withMessage('Email is required')
-  .bail()
-  .isEmail()
-  .withMessage('Invalid email')
-  .normalizeEmail();
-
-export const password = check('password')
-  .trim()
-  .notEmpty()
-  .withMessage('Password is required');
-
-export const passwordReg = check('password')
-  .trim()
-  .notEmpty()
-  .withMessage('Password is required')
-  .bail()
-  .isLength({
-    min: User.PASSWORD.MIN_LENGTH,
-    max: User.PASSWORD.MAX_LENGTH
-  })
-  .withMessage(`Must be between ${User.PASSWORD.MIN_LENGTH} and ${User.PASSWORD.MAX_LENGTH} characters long`);
-
-// File
-
-export const uploadEntity = param('entity')
-  .isIn(ENTITIES)
-  .withMessage('This upload entity is not allowed')
-
-export const uploadType = param('type')
-  .isIn(TYPES)
-  .withMessage('This upload type is not allowed')
 
 // add all the rules here
 
 const rulesHash = {
-  first_name,
-  last_name,
-  usernameReg,
-  username,
-  email,
-  password,
-  passwordReg,
-  uploadEntity,
-  uploadType
+  ...userValidators,
+  ...imageValidators
 };
 
-export const formatErrors = errors => {
+export const formatErrors = (errors: any): object => {
   const result = {};
   errors.map(error => {
-    const errors = {};
     if (result[error.param]) {
       result[error.param].push(error.msg)
     } else {
@@ -118,18 +25,22 @@ export const formatErrors = errors => {
   return result;
 };
 
-export const validatorFn = (req: express.Request, res: express.Response, next: express.NextFunction): express.NextFunction => {
+export const validatorFn = (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+): express.NextFunction => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    const errors = result.array()
+    const errors = result.array();
     return next(new ValidationError(formatErrors(errors)));
   }
 
   return next();
 };
 
-export const validate = type => {
+export const validate = (type: string): MFunction[] => {
   if (type && (rules && rules[type])) {
     const validator = rules[type].map(rule => {
       if (rulesHash[rule]) {
@@ -138,6 +49,6 @@ export const validate = type => {
     });
     return [...validator, validatorFn];
   }
-  return [DEF_MIDDLEWARE];
+  return DEF_MIDDLEWARE;
 };
 

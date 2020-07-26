@@ -1,16 +1,16 @@
 import * as express from 'express';
-import { RouteItem } from '@routes/index';
+import { RouteItem, MFunction } from '@routes/index';
 import { notFoundErrorHandler, errorHandler } from '@error_handlers/index';
 import { privateFolder } from '@middlewares/storage';
 
 class App {
 
   public express;
-  private privateFolder;
+  private readonly privateFolder;
 
   constructor(
       private database: any,
-      private middlewares: any[],
+      private middlewares: MFunction[],
       private routes: RouteItem[]
     ) {
     this.express = express();
@@ -25,7 +25,7 @@ class App {
     database.setup();
   }
 
-  private mountMiddlewares(middlewares): void {
+  private mountMiddlewares(middlewares: MFunction[]): void {
     for (const i in middlewares) {
       this.express.use(middlewares[i]);
     }

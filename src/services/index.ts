@@ -23,6 +23,8 @@ export interface PaginationInterface<T> {
   nextPage: boolean | number;
 }
 
+export const SORT_DIRECTIONS = ['asc', 'desc'];
+
 class Service {
 
   protected create<T>(
@@ -39,25 +41,39 @@ class Service {
     query: object = {},
     options: ServiceOptionsInterface = {}
   ): Promise<PaginationInterface<T>> {
+    const { limit, select, populate } = options;
+    const sortFromQuery = options.sort;
+    const fields = select.split(' ');
+    const sort = {};
+    for (const key in sortFromQuery) {
+      if (
+        sortFromQuery[key] &&
+        sortFromQuery.hasOwnProperty(key) &&
+        fields.includes(key) &&
+        SORT_DIRECTIONS.includes(sortFromQuery[key])
+      ) {
+        sort[key] = sortFromQuery[key]
+      }
+    }
     const page = Math.abs(options.page) || 1;
     const total = await this.count(model, query);
-    const totalPages = Math.ceil(total / options.limit);
+    const totalPages = Math.ceil(total / limit);
     const prevPage = page !== 1 ? (page - 1) : false;
     const nextPage = page < totalPages ? (page + 1) : false;
-    const q = model
+    return model
       .find(query)
-      .skip(options.limit * (page - 1))
-      .sort(options.sort)
-      .limit(options.limit)
-      .select(options.select)
-      .populate(options.populate)
+      .skip(limit * (page - 1))
+      .sort(sort)
+      .limit(limit)
+      .select(select)
+      .populate(populate)
       .exec()
       .then(data => {
         return Promise.resolve({
           data,
           total,
           page,
-          limit: options.limit,
+          limit,
           totalPages,
           prevPage,
           nextPage
@@ -66,7 +82,6 @@ class Service {
       .catch(err => {
         throw err;
       });
-    return q;
   }
 
   protected findOne<T>(
@@ -88,7 +103,7 @@ class Service {
   protected updateOne<T>(
     model: mongoose.Model,
     query: object,
-    fields: T,
+    fields: object,
     options: object,
     populate: PopulateInterface[] | PopulateInterface
   ): Promise<T> {
@@ -109,7 +124,7 @@ class Service {
     return model
       .findById(id)
       .select(select)
-      .populate(populate)      
+      .populate(populate)
       .catch(err => {
         throw err;
       });
