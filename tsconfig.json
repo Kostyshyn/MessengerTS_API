@@ -19,7 +19,8 @@
       "@error_handlers/*": ["src/error_handlers/*"],
       "@data_lists/*": ["src/data_lists/*"],
       "@validators/*": ["src/validators/*"],
-      "@helpers/*": ["src/helpers/*"]
+      "@helpers/*": ["src/helpers/*"],
+      "@seeds/*": ["src/seeds/*"]
     }
 	},
 	"include": [
