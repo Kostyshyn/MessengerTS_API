@@ -3,12 +3,15 @@ import Service from '@services/index';
 import { resolve, join } from 'path';
 import { config } from 'dotenv';
 import * as fs from 'fs';
+import { Model } from 'mongoose';
 
 class SeedService extends Service {
 
-	public createRecord(model): Promise<any> {
-		// test
-		return this.count(model, {});
+	public createRecord<T>(
+		model: Model,
+		data: T
+	): Promise<T> {
+		return this.create<T>(model, data);
 	}
 
 }
@@ -18,7 +21,7 @@ const seedService = new SeedService();
 class Seeder {
 
 	constructor(
-		private model: any,
+		private model: Model,
 		private options: any = {}
 	) {}
 
@@ -46,11 +49,19 @@ class Seeder {
 	  await database.setup();
 	}
 
-	public async seed() {
-		await this.setup();
-		const result = await seedService.createRecord(this.model);
-		console.log('Seeder:', result);
-		process.exit(0);
+	public async seed<T>() {
+		try {
+			await this.setup();
+			const { count, generator } = this.options;
+			for (let index = 1; index <= count; index++) {
+				const data: T = generator({ index });
+				const result = await seedService.createRecord<T>(this.model, data);
+				console.log(result);
+			}
+			process.exit(0);
+		} catch (err) {
+			throw err;
+		}
 	}
 
 }
