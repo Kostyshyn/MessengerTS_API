@@ -14,6 +14,13 @@ class SeedService extends Service {
 		return this.create<T>(model, data);
 	}
 
+	public countRecords(
+		model: Model,
+		query: object = {}
+	): Promise<number> {
+		return this.count(model, query);
+	}
+
 }
 
 const seedService = new SeedService();
@@ -52,8 +59,14 @@ class Seeder {
 	public async seed<T>() {
 		try {
 			await this.setup();
-			const { count, generator } = this.options;
-			for (let index = 1; index <= count; index++) {
+			const { count, generator, drop } = this.options;
+			let pointer = 1;
+			if (drop) {
+				await this.model.collection.drop();
+			} else {
+				pointer = await seedService.countRecords(this.model) + 1;
+			}
+			for (let index = pointer; index <= (count + pointer); index++) {
 				const data: T = generator({ index });
 				const result = await seedService.createRecord<T>(this.model, data);
 				console.log(result);

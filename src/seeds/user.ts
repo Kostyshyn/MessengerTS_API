@@ -8,7 +8,7 @@ const DEF_PASSWORD = 123456;
 
 export const UserSeeder = new Seeder(User, {
 	count: 5,
-	drop: true, // test
+	drop: false,
 	generator: ({ index }) => ({
 		first_name: faker.name.firstName(),
 		last_name: faker.name.lastName(),
