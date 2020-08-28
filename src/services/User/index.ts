@@ -124,9 +124,9 @@ class UserService extends Service {
     });
   }
 
-  public async getUserByUrl(url: string): Promise<UserModelInterface> {
+  public async getUserBy(query: object = {}): Promise<UserModelInterface> {
 
-    const user = await this.findOne<UserModelInterface>(User, { url }, {
+    const user = await this.findOne<UserModelInterface>(User, query, {
       select: userFields.join(' '),
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
@@ -137,7 +137,17 @@ class UserService extends Service {
       return user;
     }
 
-    throw new NotFoundError(`${ url } not found`);
+    throw new NotFoundError(`User not found`);
+  }
+
+  public async getUserById(id: string): Promise<UserModelInterface> {
+
+    return this.getUserBy({ _id: id });
+  }
+
+  public async getUserByUrl(url: string): Promise<UserModelInterface> {
+
+    return this.getUserBy({ url });
   }
 
 }

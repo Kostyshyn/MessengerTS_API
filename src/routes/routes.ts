@@ -50,15 +50,15 @@ export default [
         middleware: [protectedRoute],
         controller: UserController.getUsers,
         children: [
-          // test
           {
-            route: '/images',
-            controller: UserController.getUserImages
-          },
-          //
-          {
-            route: '/:url',
-            controller: UserController.getUserByUrl
+            route: '/:id',
+            controller: UserController.getUserById,
+            children: [
+              {
+                route: '/images',
+                controller: UserController.getUserImages,
+              }
+            ]
           }
         ]
       }
