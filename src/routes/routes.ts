@@ -37,7 +37,6 @@ export default [
             route: '/image',
             method: 'post',
             middleware: [
-              protectedRoute,
               uploadFile,
               validate('image')
             ],
