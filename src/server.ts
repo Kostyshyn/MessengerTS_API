@@ -21,8 +21,9 @@ class App {
     this.errorHandlers();
   }
 
-  private connectDatabase(database): void {
-    database.setup();
+  private async connectDatabase(database): Promise<void> {
+    await database.setup();
+    // TODO: seeds must run after the 'database.setup' method
   }
 
   private mountMiddlewares(middlewares: MFunction[]): void {
