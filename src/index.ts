@@ -1,28 +1,34 @@
+import 'module-alias/register';
 import * as http from 'http';
 import * as colors from 'colors';
 import * as os from 'os';
-import 'module-alias/register';
 import * as ip from 'ip';
 import * as cluster from 'cluster';
 import * as fs from 'fs';
-import * as path from 'path';
 import App from '@root/server';
 import DataBase from '@database/index';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { config } from 'dotenv';
 
 import middlewares from '@middlewares/index';
 import routes from '@routes/index';
 
-const { NODE_ENV } = process.env;
+const {
+  env,
+  cwd,
+  exit,
+  pid
+} = process;
 
-const envFile = path.join(__dirname, `../.env.${ NODE_ENV }`);
+const { NODE_ENV } = env;
+
+const envFile = join(cwd(), `.env.${NODE_ENV}`);
 
 if (!fs.existsSync(envFile)) {
-  throw new Error(`Environment variables: .env.${ NODE_ENV } file is missing`);
+  throw new Error(`Environment variables: .env.${NODE_ENV} file is missing`);
 }
 
-config({ path: resolve(__dirname, `../.env.${ NODE_ENV }`) });
+config({ path: resolve(cwd(), `.env.${NODE_ENV}`) });
 
 function normalizePort(val): number | boolean {
   const port = parseInt(val, 10);
@@ -54,11 +60,11 @@ function onError(port) {
     switch (error.code) {
       case 'EACCES':
         console.error(bind + ' requires elevated privileges');
-        process.exit(1);
+        exit(1);
       break;
       case 'EADDRINUSE':
         console.error(bind + ' is already in use');
-        process.exit(1);
+        exit(1);
       break;
       default:
         throw error;
@@ -75,7 +81,7 @@ function runServer(): void {
     DB_URL,
     DB_NAME,
     PORT
-  } = process.env;
+  } = env;
   const dbAuth = `${DB_HOST}${DB_USERNAME}:${DB_PASSWORD}${DB_URL}/${DB_NAME}`
   const database = new DataBase(`${dbAuth}`);
   const port = normalizePort(PORT || 8080);
@@ -83,7 +89,7 @@ function runServer(): void {
   const server = http.createServer(app);
 
   server.listen(port, () => {
-    console.log(colors.green('Server listenning on:'), ip.address() + ':' + port, '--- process: ' + process.pid);
+    console.log(colors.green('Server listening on:'), ip.address() + ':' + port, '--- process: ' + pid);
   });
   server.on('error', onError(port));
 };
