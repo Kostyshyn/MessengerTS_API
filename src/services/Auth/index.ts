@@ -51,7 +51,7 @@ class AuthService extends Service {
     });
 
     if (findUser) {
-      const match = findUser.username === user.username ? 'username' : 'email'
+      const match = findUser.username === user.username ? 'username' : 'email';
       throw new ValidationError({
         [match]: [`User with ${match} '${user[match]}' is already exists`]
       });
