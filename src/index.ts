@@ -1,14 +1,14 @@
+import 'module-alias/register';
 import * as http from 'http';
 import * as colors from 'colors';
 import * as os from 'os';
-import 'module-alias/register';
 import * as ip from 'ip';
 import * as cluster from 'cluster';
 import * as fs from 'fs';
 import * as path from 'path';
 import App from '@root/server';
 import DataBase from '@database/index';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { config } from 'dotenv';
 
 import middlewares from '@middlewares/index';
@@ -16,13 +16,16 @@ import routes from '@routes/index';
 
 const { NODE_ENV } = process.env;
 
-const envFile = path.join(__dirname, `../.env.${ NODE_ENV }`);
+// TODO: create ENV resolver and change paths to process.cwd()
+
+const envFile = join(process.cwd(), `.env.${NODE_ENV}`);
 
 if (!fs.existsSync(envFile)) {
-  throw new Error(`Environment variables: .env.${ NODE_ENV } file is missing`);
+  throw new Error(`Environment variables: .env.${NODE_ENV} file is missing`);
 }
 
-config({ path: resolve(__dirname, `../.env.${ NODE_ENV }`) });
+config({ path: resolve(__dirname, `../.env.${NODE_ENV}`) });
+
 
 function normalizePort(val): number | boolean {
   const port = parseInt(val, 10);
