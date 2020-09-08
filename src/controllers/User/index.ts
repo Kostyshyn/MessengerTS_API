@@ -76,13 +76,27 @@ class UserController extends Controller {
     }
   }
 
+  public async getUserById(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.params;
+      const user = await UserService.getUserById(id);
+      return res.json({ user });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   public async getUserImages(
       req: express.Request,
       res: express.Response,
       next: express.NextFunction
     ): Promise<R> {
     try {
-      const { id } = req.decoded;
+      const { id } = req.params;
       const images = await FileService.getUserImages(id);
       return res.json({ images });
     } catch (err) {

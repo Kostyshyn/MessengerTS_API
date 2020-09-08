@@ -26,6 +26,7 @@ export const DEF_MIDDLEWARE: MFunction[] = [
 const DEF_METHOD = 'get';
 const DEF_CONTROLLER: CFunction = notFoundErrorHandler;
 const { ALLOWED_ROUTER_METHODS } = config;
+const ROUTE_PARAMS = { mergeParams: true };
 
 export interface RouteItem {
   route: string;
@@ -42,11 +43,11 @@ function generateRoutes(
     routes: RouteItem[]
 ): express.Router {
   for (const i in routes) {
-    const { 
-      method = DEF_METHOD, 
-      route, 
-      middleware = DEF_MIDDLEWARE, 
-      controller = DEF_CONTROLLER, 
+    const {
+      method = DEF_METHOD,
+      route,
+      middleware = DEF_MIDDLEWARE,
+      controller = DEF_CONTROLLER,
       children = []
     } = routes[i];
 
@@ -57,7 +58,7 @@ function generateRoutes(
     router[method](route, middleware, controller);
 
     if (children && children.length) {
-      const childrenRoutes = generateRoutes(express.Router(), children);
+      const childrenRoutes = generateRoutes(express.Router(ROUTE_PARAMS), children);
       router.use(route, middleware, childrenRoutes);
     }
   }
@@ -65,4 +66,4 @@ function generateRoutes(
   return router;
 };
 
-export default generateRoutes(express.Router(), routes);
+export default generateRoutes(express.Router(ROUTE_PARAMS), routes);
