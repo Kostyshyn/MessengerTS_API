@@ -8,7 +8,8 @@ import { privateFolderPath } from '@middlewares/storage'
 
 // now for images only
 
-const { TMP_DIR } = config.DEFAULTS;const {
+const { TMP_DIR } = config.DEFAULTS;
+const {
   MAX_FILE_SIZE_MB,
   IMAGE
 } = config.FILES;

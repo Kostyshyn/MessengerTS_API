@@ -2,6 +2,7 @@ import * as express from 'express';
 import { R } from '@root/routes';
 import Controller from '@controllers/index';
 import AuthService from '@services/Auth/index';
+import MailService from '@services/Mail/index';
 import { generateToken } from '@helpers/auth';
 
 class AuthController extends Controller {
@@ -36,6 +37,7 @@ class AuthController extends Controller {
       const token = generateToken({
         id: user._id
       });
+      await MailService.sendConfirmationEmail(user);
       return res.json({ user, token });
     } catch (err) {
       return next(err);
