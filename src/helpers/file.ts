@@ -42,7 +42,7 @@ export const checkDir = (filePath: string): void => {
   try {
     fs.statSync(p);
   } catch (err) {
-    shell.mkdirSync('-p', p);
+    shell.mkdir('-p', p);
   }
 };
 
