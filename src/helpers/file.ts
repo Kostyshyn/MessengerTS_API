@@ -8,9 +8,9 @@ import ErrnoException = NodeJS.ErrnoException;
 export type fileAction = ErrnoException | null | boolean;
 
 export const moveFile = (
-    oldPath: string,
-    newPath: string
-  ): Promise<fileAction> => {
+  oldPath: string,
+  newPath: string
+): Promise<fileAction> => {
   const from = normalize(oldPath);
   const to = normalize(newPath);
   return new Promise((resolve, reject) => {
@@ -47,10 +47,10 @@ export const checkDir = (filePath: string): void => {
 };
 
 export const renderTemplate = async (
-    filePath: string,
-    payload: object = {},
-    options: object = {}
-  ): Promise<string> => {
+  filePath: string,
+  payload: object = {},
+  options: object = {}
+): Promise<string> => {
   const { TEMPLATES_FOLDER, TEMPLATES_EXT } = config;
   const templatePath = resolve(process.cwd(), TEMPLATES_FOLDER, `${filePath}.${TEMPLATES_EXT}`);
   return await renderFile(templatePath, payload, options);

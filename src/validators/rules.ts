@@ -1,6 +1,6 @@
 const register = [
-	'first_name',
-	'last_name',
+  'first_name',
+  'last_name',
   'usernameReg',
   'email',
   'passwordReg'
@@ -12,8 +12,8 @@ const login = [
 ];
 
 const updateInfo = [
-	'first_name',
-	'last_name',
+  'first_name',
+  'last_name',
   'usernameReg'
 ];
 

@@ -17,7 +17,7 @@ class AuthService extends Service {
     const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
     }, {
-      select: `${ userSelfFields.join(' ') } password`,
+      select: `${userSelfFields.join(' ')} password`,
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]

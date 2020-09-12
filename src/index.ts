@@ -7,6 +7,7 @@ import * as cluster from 'cluster';
 import * as fs from 'fs';
 import App from '@root/server';
 import DataBase from '@database/index';
+import MailService from '@services/Mail/index';
 import { resolve, join } from 'path';
 import { config } from 'dotenv';
 
@@ -47,25 +48,25 @@ function normalizePort(val): number | boolean {
 };
 
 function onError(port) {
-  return function(error): void {
+  return function (error): void {
     if (error.syscall !== 'listen') {
       throw error;
     }
 
     const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+      ? 'Pipe ' + port
+      : 'Port ' + port;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
         console.error(bind + ' requires elevated privileges');
         exit(1);
-      break;
+        break;
       case 'EADDRINUSE':
         console.error(bind + ' is already in use');
         exit(1);
-      break;
+        break;
       default:
         throw error;
     }
@@ -82,17 +83,24 @@ function runServer(): void {
     DB_NAME,
     PORT
   } = env;
-  const dbAuth = `${DB_HOST}${DB_USERNAME}:${DB_PASSWORD}${DB_URL}/${DB_NAME}`
+  const dbAuth = `${DB_HOST}${DB_USERNAME}:${DB_PASSWORD}${DB_URL}/${DB_NAME}`;
   const database = new DataBase(`${dbAuth}`);
   const port = normalizePort(PORT || 8080);
-  const app = new App(database, middlewares, routes).express;
-  const server = http.createServer(app);
+  const app = new App(
+    database,
+    MailService,
+    middlewares,
+    routes
+  );
+  app.run().then(express => {
+    const server = http.createServer(express);
 
-  server.listen(port, () => {
-    console.log(colors.green('Server listening on:'), ip.address() + ':' + port, '--- process: ' + pid);
-  });
-  server.on('error', onError(port));
-};
+    server.listen(port, () => {
+      console.log(colors.green('Server listening on:'), ip.address() + ':' + port, '--- process: ' + pid);
+    });
+    server.on('error', onError(port));
+  }).catch(onError(port));
+}
 
 if (NODE_ENV === 'production') {
   if (cluster.isMaster) {

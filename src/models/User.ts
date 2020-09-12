@@ -39,7 +39,7 @@ function lastNameValidator(value): boolean | void {
   if (value) {
     return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
   }
-};
+}
 
 const Model = Schema({
   role: {
@@ -99,10 +99,10 @@ const Model = Schema({
     default: Date.now
   }
 }, {
-    timestamps: true
+  timestamps: true
 });
 
-Model.pre('save', async function(): Promise<void> {
+Model.pre('save', async function (): Promise<void> {
   if (this.isModified('password') || this.isModified('username')) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(this.password, salt);

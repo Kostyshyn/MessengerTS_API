@@ -10,8 +10,8 @@ export const generateToken = (payload: object): string => {
 };
 
 export const validatePassword = (
-		savedPassword: string,
-		password: string
-	): Promise<boolean> => {
+  savedPassword: string,
+  password: string
+): Promise<boolean> => {
   return bcrypt.compare(password, savedPassword);
 };

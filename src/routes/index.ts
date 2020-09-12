@@ -39,8 +39,8 @@ export interface RouteItem {
 const routes: RouteItem[] = routesConfig;
 
 function generateRoutes(
-    router: express.Router,
-    routes: RouteItem[]
+  router: express.Router,
+  routes: RouteItem[]
 ): express.Router {
   for (const i in routes) {
     const {
@@ -52,7 +52,7 @@ function generateRoutes(
     } = routes[i];
 
     if (!ALLOWED_ROUTER_METHODS.includes(method)) {
-      throw new Error(`'${ method }' - router method is forbidden`);
+      throw new Error(`'${method}' - router method is forbidden`);
     }
 
     router[method](route, middleware, controller);

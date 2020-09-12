@@ -52,7 +52,7 @@ class UploadService {
     fileSize: 1024 * 1024 * MAX_FILE_SIZE_MB
   };
 
-  private static getType (file: FileInterface): string {
+  private static getType(file: FileInterface): string {
     if (file) {
       const { mimetype } = file;
       return mimetype.split('/')[0];
@@ -64,7 +64,7 @@ class UploadService {
     return (req, file, cb): void => {
       const type = UploadService.getType(file);
       const mimetypes = this.fileFiltersHash[type];
-      if (mimetypes.includes(file.mimetype)){
+      if (mimetypes.includes(file.mimetype)) {
         cb(null, true);
       } else {
         cb(new ValidationError({
@@ -75,10 +75,10 @@ class UploadService {
   }
 
   private static destination(
-      req: express.Request,
-      file: FileInterface,
-      cb: (ErrorArg, ResultArg) => {}
-    ): void {
+    req: express.Request,
+    file: FileInterface,
+    cb: (ErrorArg, ResultArg) => {}
+  ): void {
     const directory = path.normalize(`${privateFolderPath}/${TMP_DIR}`);
     checkDir(directory);
     cb(null, directory);

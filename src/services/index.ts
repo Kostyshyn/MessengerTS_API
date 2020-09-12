@@ -111,8 +111,8 @@ class Service {
       .findOneAndUpdate(query, fields, options)
       .populate(populate)
       .catch(err => {
-      throw err;
-    });
+        throw err;
+      });
   }
 
   protected findById<T>(

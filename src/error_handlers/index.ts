@@ -8,9 +8,9 @@ import {
 import config from '@config/index';
 
 export const notFoundErrorHandler = (
-    req: express.Request,
-    res: express.Response
-  ): express.Response => {
+  req: express.Request,
+  res: express.Response
+): express.Response => {
   const err = new NotFoundError(req.originalUrl);
   const { name, status, message } = err;
   res.status(err.status).json({
@@ -22,11 +22,11 @@ export const notFoundErrorHandler = (
 
 
 export const errorHandler = (
-    error: HttpException,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ): express.Response => {
+  error: HttpException,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): express.Response => {
   let err;
   if (error instanceof multer.MulterError) {
     err = new ValidationError({

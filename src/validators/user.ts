@@ -1,5 +1,6 @@
 import { check } from 'express-validator';
 import config from '@config/index';
+
 const { User } = config.VALIDATION;
 
 export const first_name = check('first_name')

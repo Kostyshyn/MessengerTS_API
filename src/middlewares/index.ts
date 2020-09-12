@@ -5,7 +5,7 @@ import * as cors from 'cors';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
-// storages
+// storage
 
 import { publicFolder } from './storage';
 

@@ -1,7 +1,7 @@
 export const truncate = (
-    fullStr: string,
-    strLen: number,
-    separator?: string
+  fullStr: string,
+  strLen: number,
+  separator?: string
 ): string => {
   if (fullStr.length <= strLen) {
     return fullStr;

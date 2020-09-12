@@ -4,7 +4,7 @@ import {
   UserModelInterface,
   UserUpdateFieldsInterface
 } from '@models/User';
-import Service, {PaginationInterface, ServiceOptionsInterface} from '@services/index';
+import Service, { PaginationInterface, ServiceOptionsInterface } from '@services/index';
 import {
   NotFoundError,
   TokenVerificationError,
@@ -16,6 +16,7 @@ import {
   userList as userListFields
 } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
+
 const { PAGINATION } = config;
 
 class UserService extends Service {
@@ -25,7 +26,7 @@ class UserService extends Service {
   }
 
   public async getUser(
-      id: string
+    id: string
   ): Promise<UserModelInterface> {
 
     const user = await this.findById<UserModelInterface>(User, id, {
@@ -43,8 +44,8 @@ class UserService extends Service {
   }
 
   public async updateUser(
-      id: string,
-      fields: object
+    id: string,
+    fields: object
   ): Promise<UserModelInterface> {
 
     const query = { _id: id };
@@ -54,11 +55,11 @@ class UserService extends Service {
     ];
 
     const updatedUser = await this.updateOne<UserModelInterface>(
-        User,
-        query,
-        fields,
-        options,
-        populate
+      User,
+      query,
+      fields,
+      options,
+      populate
     );
 
     if (updatedUser) {
@@ -69,8 +70,8 @@ class UserService extends Service {
   }
 
   public async updateUserFields(
-      id: string,
-      fields: UserUpdateFieldsInterface
+    id: string,
+    fields: UserUpdateFieldsInterface
   ): Promise<UserModelInterface> {
     if (fields.hasOwnProperty('username')) {
       const findUser = await this.findOne<UserModelInterface>(User, {
@@ -96,9 +97,9 @@ class UserService extends Service {
   }
 
   public async getUsers(
-      id: string,
-      keyword: string,
-      options: ServiceOptionsInterface
+    id: string,
+    keyword: string,
+    options: ServiceOptionsInterface
   ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const sanitized = keyword.replace(/\\/g, '').trim();
