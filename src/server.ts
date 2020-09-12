@@ -29,7 +29,7 @@ class App {
     return this.express;
   }
 
-  private async connectDatabase(database): Promise<void> {
+  private async connectDatabase(database: DBInterface): Promise<void> {
     await database.setup();
   }
 
@@ -44,7 +44,7 @@ class App {
     this.privateFolder(this.express);
   }
 
-  private mountRoutes(routes): void {
+  private mountRoutes(routes: RouteItem[]): void {
     this.express.use('/', routes);
   }
 

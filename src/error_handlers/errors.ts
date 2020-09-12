@@ -12,6 +12,16 @@ export class HttpException extends Error {
 
 }
 
+export class ForbiddenError extends HttpException {
+
+  public name = 'ForbiddenError';
+
+  constructor(public message: string) {
+    super(403, message);
+  }
+
+}
+
 export class NotFoundError extends HttpException {
 
   public name = 'NotFoundError';

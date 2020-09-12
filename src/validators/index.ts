@@ -24,7 +24,6 @@ const rulesHash = {
 
 export const formatErrors = (errors: Array<ReqError>): object => {
   const result = {};
-  console.log(errors);
   errors.map(error => {
     if (result[error.param]) {
       result[error.param].push(error.msg)
