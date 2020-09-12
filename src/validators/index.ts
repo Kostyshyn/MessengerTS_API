@@ -15,7 +15,7 @@ export interface ReqError  {
   value?: string;
   msg: string;
   nestedErrors?: unknown[];
-};
+}
 
 const rulesHash = {
   ...userValidators,

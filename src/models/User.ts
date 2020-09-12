@@ -15,9 +15,12 @@ export interface UserModelInterface extends mongoose.Document {
   username: string;
   email?: string;
   password?: string;
-  reset_token?: string;
   profile_image: ImageModelInterface;
   online?: boolean;
+  isConfirmed?: boolean;
+  isActive?: boolean;
+  isBlocked?: boolean;
+  softDelete?: boolean;
   url?: string;
   last_seen?: Date;
 }
@@ -27,6 +30,11 @@ export interface UserUpdateFieldsInterface {
   last_name?: string;
   username?: string;
   profile_image?: ImageModelInterface;
+  online?: boolean;
+  isConfirmed?: boolean;
+  isActive?: boolean;
+  isBlocked?: boolean;
+  softDelete?: boolean;
   url?: string;
 }
 
@@ -78,14 +86,27 @@ const Model = Schema({
     type: String,
     required: true
   },
-  reset_token: {
-    type: String
-  },
   profile_image: {
     type: Schema.Types.ObjectId,
     ref: 'Image'
   },
   online: {
+    type: Boolean,
+    default: false
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: false
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  softDelete: {
     type: Boolean,
     default: false
   },
@@ -105,8 +126,7 @@ const Model = Schema({
 Model.pre('save', async function (): Promise<void> {
   if (this.isModified('password') || this.isModified('username')) {
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(this.password, salt);
-    this.password = hash;
+    this.password = await bcrypt.hash(this.password, salt);
     this.url = '@' + this.username;
   }
 });

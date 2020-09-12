@@ -23,6 +23,10 @@ export default [
         controller: AuthController.register
       },
       {
+        route: '/confirm',
+        controller: AuthController.confirm
+      },
+      {
         route: '/user',
         middleware: [protectedRoute],
         controller: UserController.fetchUser,

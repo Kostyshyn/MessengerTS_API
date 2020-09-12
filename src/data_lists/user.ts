@@ -8,6 +8,7 @@ export const userSelf = [
   'username',
   'email',
   'last_seen',
+  'isConfirmed',
   'url',
   'updatedAt'
 ];

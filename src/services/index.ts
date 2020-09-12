@@ -36,6 +36,15 @@ class Service {
     });
   }
 
+  protected delete<T>(
+    model: mongoose.Model,
+    query: object = {}
+  ): Promise<T> {
+    return model.deleteOne(query).catch(err => {
+      throw err;
+    });
+  }
+
   protected async find<T>(
     model: mongoose.Model,
     query: object = {},

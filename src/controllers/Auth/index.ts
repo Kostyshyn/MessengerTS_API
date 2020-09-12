@@ -3,7 +3,10 @@ import { R } from '@root/routes';
 import Controller from '@controllers/index';
 import AuthService from '@services/Auth/index';
 import MailService from '@services/Mail/index';
+import TokenService from '@services/Token/index';
 import { generateToken } from '@helpers/auth';
+import UserService from '@services/User';
+import { NotFoundError, ValidationError } from '@error_handlers/errors';
 
 class AuthController extends Controller {
 
@@ -21,7 +24,7 @@ class AuthController extends Controller {
       const token = generateToken({
         id: user._id
       });
-      return res.json({user, token});
+      return res.json({ user, token });
     } catch (err) {
       return next(err);
     }
@@ -37,8 +40,36 @@ class AuthController extends Controller {
       const token = generateToken({
         id: user._id
       });
-      await MailService.sendConfirmationEmail(user);
-      return res.json({user, token});
+      const origin = req.header('Origin');
+      await MailService.sendConfirmationEmail(user, origin);
+      return res.json({ user, token });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  public async confirm(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { token } = req.query;
+      const confirmationToken = await TokenService.getToken(token);
+      const { user: userId, _id: tokenId } = confirmationToken;
+      const user = await UserService.getUser(userId);
+      if (user.isConfirmed) {
+        return next(new ValidationError({
+          isConfirmed: ['User is already confirmed']
+        }));
+      }
+      const confirmedUser = await UserService.updateUserFields(userId, { isConfirmed: true });
+      await TokenService.deleteToken(tokenId);
+      const authToken = generateToken({ id: user._id });
+      return res.json({
+        user: confirmedUser,
+        token: authToken
+      });
     } catch (err) {
       return next(err);
     }

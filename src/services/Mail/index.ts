@@ -3,6 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { renderTemplate } from '@helpers/file';
 import { HttpException } from '@error_handlers/errors';
 import { UserModelInterface } from '@models/User';
+import TokenService from '@services/Token/index';
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -90,14 +91,19 @@ class MailService extends Service implements Mailer {
     }
   }
 
-  public async sendConfirmationEmail(user: UserModelInterface): Promise<SentMessageInfo> {
-    const { email } = user;
+  public async sendConfirmationEmail(
+    user: UserModelInterface,
+    origin: string
+  ): Promise<SentMessageInfo> {
+    const { email, _id } = user;
+    const confirmationToken = await TokenService.createToken(_id, 'confirm');
+    const link = `${origin}/confirm?token=${confirmationToken}`;
     // TODO: mail account can be different
     const { MAIL_ACCOUNT } = process.env;
     return this.sendEmail('userConfirmation', {
       first_name: user.first_name,
       last_name: user.last_name,
-      confirmationToken: ''
+      link
     }, {
       from: MAIL_ACCOUNT,
       to: email,

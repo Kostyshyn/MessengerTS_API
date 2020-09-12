@@ -40,7 +40,7 @@ class UserService extends Service {
       return user;
     }
 
-    throw new TokenVerificationError('Token verification failed')
+    throw new NotFoundError('User not found');
   }
 
   public async updateUser(
@@ -66,7 +66,7 @@ class UserService extends Service {
       return updatedUser;
     }
 
-    throw new TokenVerificationError('Token verification failed')
+    throw new NotFoundError('User not found');
   }
 
   public async updateUserFields(
@@ -138,7 +138,7 @@ class UserService extends Service {
       return user;
     }
 
-    throw new NotFoundError(`User not found`);
+    throw new NotFoundError('User not found');
   }
 
   public async getUserById(id: string): Promise<UserModelInterface> {
