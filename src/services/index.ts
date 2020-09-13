@@ -61,7 +61,7 @@ class Service {
         fields.includes(key) &&
         SORT_DIRECTIONS.includes(sortFromQuery[key])
       ) {
-        sort[key] = sortFromQuery[key]
+        sort[key] = sortFromQuery[key];
       }
     }
     const page = Math.abs(options.page) || 1;

@@ -1,6 +1,6 @@
 import { Token, TokenModelInterface, TokenType } from '@models/Token';
 import Service from '@services/index';
-import { HttpException, TokenVerificationError } from '@error_handlers/errors';
+import { HttpException, NotFoundError } from '@error_handlers/errors';
 import { generateRandomToken } from '@helpers/auth';
 
 class TokenService extends Service {
@@ -27,15 +27,15 @@ class TokenService extends Service {
   }
 
   public async getToken(
-    value: string
+    query: object
   ): Promise<TokenModelInterface> {
 
-    const token = await this.findOne<TokenModelInterface>(Token, { value });
+    const token = await this.findOne<TokenModelInterface>(Token, query);
     if (token) {
       return token;
     }
 
-    throw new TokenVerificationError('Token verification failed');
+    throw new NotFoundError('Token');
   }
 
   public async deleteToken(id: string): Promise<TokenModelInterface> {

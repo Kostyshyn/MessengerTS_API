@@ -27,7 +27,7 @@ export class NotFoundError extends HttpException {
   public name = 'NotFoundError';
 
   constructor(public page: string) {
-    super(404, `Page ${page} not found`);
+    super(404, `${page} not found`);
   }
 
 }

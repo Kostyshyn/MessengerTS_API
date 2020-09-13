@@ -7,7 +7,6 @@ import {
 import Service, { PaginationInterface, ServiceOptionsInterface } from '@services/index';
 import {
   NotFoundError,
-  TokenVerificationError,
   ValidationError
 } from '@error_handlers/errors';
 import {
@@ -40,7 +39,7 @@ class UserService extends Service {
       return user;
     }
 
-    throw new NotFoundError('User not found');
+    throw new NotFoundError('User');
   }
 
   public async updateUser(
@@ -66,7 +65,7 @@ class UserService extends Service {
       return updatedUser;
     }
 
-    throw new NotFoundError('User not found');
+    throw new NotFoundError('User');
   }
 
   public async updateUserFields(
@@ -138,7 +137,7 @@ class UserService extends Service {
       return user;
     }
 
-    throw new NotFoundError('User not found');
+    throw new NotFoundError('User');
   }
 
   public async getUserById(id: string): Promise<UserModelInterface> {

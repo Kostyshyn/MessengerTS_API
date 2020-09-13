@@ -6,7 +6,7 @@ import MailService from '@services/Mail/index';
 import TokenService from '@services/Token/index';
 import { generateToken } from '@helpers/auth';
 import UserService from '@services/User';
-import { NotFoundError, ValidationError } from '@error_handlers/errors';
+import { ValidationError } from '@error_handlers/errors';
 
 class AuthController extends Controller {
 
@@ -55,7 +55,7 @@ class AuthController extends Controller {
   ): Promise<R> {
     try {
       const { token } = req.query;
-      const confirmationToken = await TokenService.getToken(token);
+      const confirmationToken = await TokenService.getToken({ value: token });
       const { user: userId, _id: tokenId } = confirmationToken;
       const user = await UserService.getUser(userId);
       if (user.isConfirmed) {
