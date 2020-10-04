@@ -74,6 +74,27 @@ class AuthController extends Controller {
       return next(err);
     }
   }
+
+  public async resendConfirm(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.decoded;
+      const user = await UserService.getUser(id);
+      if (user.isConfirmed) {
+        return next(new ValidationError({
+          isConfirmed: ['User is already confirmed']
+        }));
+      }
+      const origin = req.header('Origin');
+      await MailService.sendConfirmationEmail(user, origin);
+      return res.json({ success: true });
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 
 export default new AuthController();

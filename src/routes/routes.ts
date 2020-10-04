@@ -27,6 +27,11 @@ export default [
         controller: AuthController.confirm
       },
       {
+        route: '/resend-confirm',
+        middleware: [protectedRoute],
+        controller: AuthController.resendConfirm
+      },
+      {
         route: '/user',
         middleware: [protectedRoute],
         controller: UserController.fetchUser,

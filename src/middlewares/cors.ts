@@ -11,7 +11,7 @@ const corsOptionsDelegate = async (
 ): Promise<void> => {
   const origin = req.header('Origin');
   // TODO: get white list form the DB
-  const whitelist = ['http://localhost:8080', 'Postman'];
+  const whitelist = ['http://localhost:8080', 'Postman', 'http://192.168.0.101:8080'];
   if (origin && whitelist.indexOf(origin) !== -1) {
     callback(null, { origin: true });
   } else {
