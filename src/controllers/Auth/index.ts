@@ -95,6 +95,29 @@ class AuthController extends Controller {
       return next(err);
     }
   }
+
+  public async resetPassword(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    const { email } = req.body;
+    try {
+      const user = await UserService.getUserByEmail(email);
+      // if (user.isConfirmed) {
+      //   return next(new ValidationError({
+      //     isConfirmed: ['User is already confirmed']
+      //   }));
+      // }
+      const origin = req.header('Origin');
+      await MailService.sendResetPasswordEmail(user, origin);
+      return res.json({ success: true });
+    } catch (err) {
+      return next(new ValidationError({
+        email: [`User with email '${email}' is not exists`]
+      }));
+    }
+  }
 }
 
 export default new AuthController();

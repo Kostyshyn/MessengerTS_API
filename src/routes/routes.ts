@@ -32,6 +32,12 @@ export default [
         controller: AuthController.resendConfirm
       },
       {
+        route: '/reset-password',
+        method: 'post',
+        middleware: validate('resetPassword'),
+        controller: AuthController.resetPassword
+      },
+      {
         route: '/user',
         middleware: [protectedRoute],
         controller: UserController.fetchUser,

@@ -150,6 +150,11 @@ class UserService extends Service {
     return this.getUserBy({ url });
   }
 
+  public async getUserByEmail(email: string): Promise<UserModelInterface> {
+
+    return this.getUserBy({ email });
+  }
+
 }
 
 export default new UserService();

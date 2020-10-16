@@ -10,10 +10,13 @@ export interface Dictionary<T> {
 }
 
 export interface MailOptionsInterface {
-  from: string;
   to: string;
   subject: string;
   html?: string;
+}
+
+export interface FullMailOptionsInterface extends MailOptionsInterface{
+  from: string;
 }
 
 export interface Envelope {
@@ -44,7 +47,8 @@ class MailService extends Service implements Mailer {
   private transporter: nodemailer.Transporter;
 
   private templates: Dictionary<string> = {
-    'userConfirmation': 'mails/userConfirmation'
+    'userConfirmation': 'mails/userConfirmation',
+    'resetPassword': 'mails/resetPassword'
   };
 
   constructor() {
@@ -81,7 +85,10 @@ class MailService extends Service implements Mailer {
     const template = this.templates[type];
     if (template && this.templates.hasOwnProperty(type)) {
       const html = await renderTemplate(template, payload);
-      const mail: MailOptionsInterface = {
+      // TODO: mail account can be different
+      const { MAIL_ACCOUNT } = process.env;
+      const mail: FullMailOptionsInterface = {
+        from: MAIL_ACCOUNT,
         ...options,
         html
       };
@@ -98,17 +105,32 @@ class MailService extends Service implements Mailer {
     const { email, _id } = user;
     const confirmationToken = await TokenService.createToken(_id, 'confirm');
     const link = `${origin}/confirm?token=${confirmationToken}`;
-    // TODO: mail account can be different
-    const { MAIL_ACCOUNT } = process.env;
     return this.sendEmail('userConfirmation', {
       first_name: user.first_name,
       last_name: user.last_name,
       link
     }, {
-      from: MAIL_ACCOUNT,
       to: email,
       subject: 'Confirmation'
     });
+  }
+
+  public async sendResetPasswordEmail(
+    user: UserModelInterface,
+    origin: string
+  ): Promise<SentMessageInfo> {
+    const { email, _id } = user;
+    const resetToken = await TokenService.createToken(_id, 'reset');
+    const link = `${origin}/change-password?token=${resetToken}`;
+    return this.sendEmail('resetPassword', {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      link
+    }, {
+      to: email,
+      subject: 'Reset password'
+    });
+
   }
 
 }
