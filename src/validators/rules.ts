@@ -3,7 +3,8 @@ const register = [
   'last_name',
   'usernameReg',
   'email',
-  'passwordReg'
+  'passwordReg',
+  'confirmPasswordReg'
 ];
 
 const login = [

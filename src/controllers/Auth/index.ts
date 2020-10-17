@@ -55,7 +55,7 @@ class AuthController extends Controller {
   ): Promise<R> {
     try {
       const { token } = req.query;
-      const confirmationToken = await TokenService.getToken({ value: token });
+      const confirmationToken = await TokenService.getToken({ value: token }, 'confirm');
       const { user: userId, _id: tokenId } = confirmationToken;
       const user = await UserService.getUser(userId);
       if (user.isConfirmed) {
@@ -64,7 +64,7 @@ class AuthController extends Controller {
         }));
       }
       const confirmedUser = await UserService.updateUserFields(userId, { isConfirmed: true });
-      await TokenService.deleteToken(tokenId);
+      await TokenService.deleteToken(tokenId, 'confirm');
       const authToken = generateToken({ id: user._id });
       return res.json({
         user: confirmedUser,
@@ -104,18 +104,16 @@ class AuthController extends Controller {
     const { email } = req.body;
     try {
       const user = await UserService.getUserByEmail(email);
-      // if (user.isConfirmed) {
-      //   return next(new ValidationError({
-      //     isConfirmed: ['User is already confirmed']
-      //   }));
-      // }
       const origin = req.header('Origin');
       await MailService.sendResetPasswordEmail(user, origin);
       return res.json({ success: true });
     } catch (err) {
-      return next(new ValidationError({
-        email: [`User with email '${email}' is not exists`]
-      }));
+      if (err.status === 404) {
+        return next(new ValidationError({
+          email: [`User with email '${email}' is not exists`]
+        }));
+      }
+      return next(err);
     }
   }
 }

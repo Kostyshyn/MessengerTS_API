@@ -2,8 +2,10 @@ import * as mongoose from 'mongoose';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const MODEL_NAME = 'Token';
-const { EXPIRES_CONFIRM_TOKEN } = process.env;
+const {
+  EXPIRES_CONFIRM_TOKEN,
+  EXPIRES_RESET_TOKEN
+} = process.env;
 
 export type TokenType = 'confirm' | 'reset';
 
@@ -17,7 +19,7 @@ export interface TokenModelInterface extends mongoose.Document {
 
 const Schema = mongoose.Schema;
 
-const Model = Schema({
+const BaseTokenSchema = {
   value: {
     type: String,
     unique: true,
@@ -31,7 +33,11 @@ const Model = Schema({
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'User'
-  },
+  }
+};
+
+const confirmTokenModel = Schema({
+  ...BaseTokenSchema,
   createdAt: {
     type: Date,
     required: true,
@@ -40,6 +46,17 @@ const Model = Schema({
   }
 });
 
-const Token = mongoose.model<TokenModelInterface>(MODEL_NAME, Model);
+const resetTokenModel = Schema({
+  ...BaseTokenSchema,
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+    expires: EXPIRES_RESET_TOKEN
+  }
+});
 
-export { Token };
+const ConfirmToken = mongoose.model<TokenModelInterface>('ConfirmToken', confirmTokenModel);
+const ResetToken = mongoose.model<TokenModelInterface>('ResetToken', resetTokenModel);
+
+export { ConfirmToken, ResetToken };

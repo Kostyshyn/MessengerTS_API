@@ -1,13 +1,9 @@
-import Service from '@services/index';
+import Service, { Dictionary } from '@services/index';
 import * as nodemailer from 'nodemailer';
 import { renderTemplate } from '@helpers/file';
 import { HttpException } from '@error_handlers/errors';
 import { UserModelInterface } from '@models/User';
 import TokenService from '@services/Token/index';
-
-export interface Dictionary<T> {
-  [key: string]: T;
-}
 
 export interface MailOptionsInterface {
   to: string;

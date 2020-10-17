@@ -1,5 +1,9 @@
 import * as mongoose from 'mongoose';
 
+export interface Dictionary<T> {
+  [key: string]: T;
+}
+
 export interface PopulateInterface {
   path: string;
   select: string;

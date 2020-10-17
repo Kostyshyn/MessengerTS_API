@@ -1,35 +1,24 @@
+import './env';
 import 'module-alias/register';
 import * as http from 'http';
 import * as colors from 'colors';
 import * as os from 'os';
 import * as ip from 'ip';
 import * as cluster from 'cluster';
-import * as fs from 'fs';
 import App from '@root/server';
 import DataBase from '@database/index';
 import MailService from '@services/Mail/index';
-import { resolve, join } from 'path';
-import { config } from 'dotenv';
 
 import middlewares from '@middlewares/index';
 import routes from '@routes/index';
 
 const {
   env,
-  cwd,
   exit,
   pid
 } = process;
 
 const { NODE_ENV } = env;
-
-const envFile = join(cwd(), `.env.${NODE_ENV}`);
-
-if (!fs.existsSync(envFile)) {
-  throw new Error(`Environment variables: .env.${NODE_ENV} file is missing`);
-}
-
-config({ path: resolve(cwd(), `.env.${NODE_ENV}`) });
 
 function normalizePort(val): number | boolean {
   const port = parseInt(val, 10);

@@ -57,7 +57,9 @@ export const email = check('email')
   .bail()
   .isEmail()
   .withMessage('Invalid email')
-  .normalizeEmail();
+  .normalizeEmail({
+    gmail_remove_dots: false
+  });
 
 export const password = check('password')
   .trim()
@@ -75,6 +77,18 @@ export const passwordReg = check('password')
   })
   .withMessage(`Must be between ${User.PASSWORD.MIN_LENGTH} and ${User.PASSWORD.MAX_LENGTH} characters long`);
 
+export const confirmPasswordReg = check('confirm_password')
+  .trim()
+  .notEmpty()
+  .withMessage('Password confirmation is required')
+  .bail()
+  .custom(async (value, { req }): Promise<boolean | string> => {
+    if (!req.body.password || req.body.password === value) {
+      return true
+    }
+    return Promise.reject('Password does not match');
+  });
+
 export default {
   first_name,
   last_name,
@@ -82,5 +96,6 @@ export default {
   username,
   email,
   password,
-  passwordReg
+  passwordReg,
+  confirmPasswordReg
 };
