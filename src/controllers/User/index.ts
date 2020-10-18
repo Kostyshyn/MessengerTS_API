@@ -11,10 +11,10 @@ class UserController extends Controller {
   }
 
   public async fetchUser(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): Promise<R> {
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
     try {
       const { id } = req.decoded;
       const user = await UserService.getUser(id);
@@ -25,10 +25,10 @@ class UserController extends Controller {
   }
 
   public async updateUserInfo(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): Promise<R> {
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
     try {
       const { id } = req.decoded;
       const { first_name, last_name, username } = req.body;
@@ -44,10 +44,10 @@ class UserController extends Controller {
   }
 
   public async getUsers(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): Promise<R> {
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
     try {
       const { id } = req.decoded;
       const { page, limit, keyword, sort } = req.query;
@@ -63,10 +63,10 @@ class UserController extends Controller {
   }
 
   public async getUserByUrl(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): Promise<R> {
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
     try {
       const { url } = req.params;
       const user = await UserService.getUserByUrl(url);
@@ -76,13 +76,27 @@ class UserController extends Controller {
     }
   }
 
-  public async getUserImages(
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): Promise<R> {
+  public async getUserById(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
     try {
-      const { id } = req.decoded;
+      const { id } = req.params;
+      const user = await UserService.getUserById(id);
+      return res.json({ user });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  public async getUserImages(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.params;
       const images = await FileService.getUserImages(id);
       return res.json({ images });
     } catch (err) {

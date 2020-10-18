@@ -7,13 +7,22 @@ import imageValidators from './image';
 import rules from '@validators/rules';
 
 // add all the rules here
+export type Location = 'body' | 'cookies' | 'headers' | 'params' | 'query';
+
+export interface ReqError  {
+  location?: Location;
+  param: string;
+  value?: string;
+  msg: string;
+  nestedErrors?: unknown[];
+}
 
 const rulesHash = {
   ...userValidators,
   ...imageValidators
 };
 
-export const formatErrors = (errors: any): object => {
+export const formatErrors = (errors: Array<ReqError>): object => {
   const result = {};
   errors.map(error => {
     if (result[error.param]) {
@@ -26,9 +35,9 @@ export const formatErrors = (errors: any): object => {
 };
 
 export const validatorFn = (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
 ): express.NextFunction => {
   const result = validationResult(req);
 

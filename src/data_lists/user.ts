@@ -1,3 +1,5 @@
+// If you need to sort by field, you need to add it to the list
+
 export const userSelf = [
   'profile_image',
   'online',
@@ -6,6 +8,7 @@ export const userSelf = [
   'username',
   'email',
   'last_seen',
+  'isConfirmed',
   'url',
   'updatedAt'
 ];

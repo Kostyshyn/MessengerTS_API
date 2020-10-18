@@ -1,5 +1,9 @@
 import * as mongoose from 'mongoose';
 
+export interface Dictionary<T> {
+  [key: string]: T;
+}
+
 export interface PopulateInterface {
   path: string;
   select: string;
@@ -36,6 +40,15 @@ class Service {
     });
   }
 
+  protected delete<T>(
+    model: mongoose.Model,
+    query: object = {}
+  ): Promise<T> {
+    return model.deleteOne(query).catch(err => {
+      throw err;
+    });
+  }
+
   protected async find<T>(
     model: mongoose.Model,
     query: object = {},
@@ -52,7 +65,7 @@ class Service {
         fields.includes(key) &&
         SORT_DIRECTIONS.includes(sortFromQuery[key])
       ) {
-        sort[key] = sortFromQuery[key]
+        sort[key] = sortFromQuery[key];
       }
     }
     const page = Math.abs(options.page) || 1;
@@ -111,8 +124,8 @@ class Service {
       .findOneAndUpdate(query, fields, options)
       .populate(populate)
       .catch(err => {
-      throw err;
-    });
+        throw err;
+      });
   }
 
   protected findById<T>(

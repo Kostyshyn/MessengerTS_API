@@ -1,10 +1,15 @@
-import { User, UserModelInterface } from '@models/User';
+import {
+  User,
+  UserModelInterface,
+  UserUpdatePasswordInterface
+} from '@models/User';
 import Service from '@services/index';
-import { HttpException, ValidationError } from '@error_handlers/errors';
+import UserService from '@services/User/index';
+import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
 import { showFields } from '@data_lists/index';
 import { userSelf as userSelfFields } from '@data_lists/user';
 import { userImageFields } from '@data_lists/image';
-import { validatePassword } from '@helpers/auth';
+import { validatePassword, generatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
 
@@ -17,7 +22,7 @@ class AuthService extends Service {
     const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
     }, {
-      select: `${ userSelfFields.join(' ') } password`,
+      select: `${userSelfFields.join(' ')} password`,
       populate: [
         { path: 'profile_image', select: userImageFields.join(' ') }
       ]
@@ -51,7 +56,7 @@ class AuthService extends Service {
     });
 
     if (findUser) {
-      const match = findUser.username === user.username ? 'username' : 'email'
+      const match = findUser.username === user.username ? 'username' : 'email';
       throw new ValidationError({
         [match]: [`User with ${match} '${user[match]}' is already exists`]
       });
@@ -66,6 +71,29 @@ class AuthService extends Service {
     } catch (err) {
       throw new HttpException(500, err.message);
     }
+  }
+
+  public async updateUserPassword(
+    id: string,
+    payload: UserUpdatePasswordInterface
+  ): Promise<UserModelInterface> {
+    const findUser = await this.findById<UserModelInterface>(User, id, { select: 'password' });
+
+    if (findUser) {
+      const isSamePass = await validatePassword(findUser.password, payload.password);
+      if (!isSamePass) {
+        const password = await generatePassword(payload.password);
+        return UserService.updateUser(id, {
+          $set: { password }
+        });
+      }
+
+      throw new ValidationError({
+        password: ['New password cannot be the same as your old password']
+      });
+    }
+
+    throw new NotFoundError('User');
   }
 }
 

@@ -23,6 +23,27 @@ export default [
         controller: AuthController.register
       },
       {
+        route: '/confirm',
+        controller: AuthController.confirm
+      },
+      {
+        route: '/resend-confirm',
+        middleware: [protectedRoute],
+        controller: AuthController.resendConfirm
+      },
+      {
+        route: '/reset-password',
+        method: 'post',
+        middleware: validate('resetPassword'),
+        controller: AuthController.resetPassword
+      },
+      {
+        route: '/change-password',
+        method: 'post',
+        middleware: validate('changePassword'),
+        controller: AuthController.changePassword
+      },
+      {
         route: '/user',
         middleware: [protectedRoute],
         controller: UserController.fetchUser,
@@ -37,7 +58,6 @@ export default [
             route: '/image',
             method: 'post',
             middleware: [
-              protectedRoute,
               uploadFile,
               validate('image')
             ],
@@ -50,15 +70,15 @@ export default [
         middleware: [protectedRoute],
         controller: UserController.getUsers,
         children: [
-          // test
           {
-            route: '/images',
-            controller: UserController.getUserImages
-          },
-          //
-          {
-            route: '/:url',
-            controller: UserController.getUserByUrl
+            route: '/:id',
+            controller: UserController.getUserById,
+            children: [
+              {
+                route: '/images',
+                controller: UserController.getUserImages,
+              }
+            ]
           }
         ]
       }

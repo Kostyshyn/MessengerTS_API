@@ -1,9 +1,10 @@
 const register = [
-	'first_name',
-	'last_name',
+  'first_name',
+  'last_name',
   'usernameReg',
   'email',
-  'passwordReg'
+  'passwordReg',
+  'confirmPasswordReg'
 ];
 
 const login = [
@@ -11,9 +12,18 @@ const login = [
   'password'
 ];
 
+const resetPassword = [
+  'email'
+];
+
+const changePassword = [
+  'passwordReg',
+  'confirmPasswordReg'
+];
+
 const updateInfo = [
-	'first_name',
-	'last_name',
+  'first_name',
+  'last_name',
   'usernameReg'
 ];
 
@@ -25,6 +35,8 @@ const image = [
 export default {
   register,
   login,
+  resetPassword,
+  changePassword,
   updateInfo,
   image
 };

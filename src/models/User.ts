@@ -1,33 +1,40 @@
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcryptjs';
 import config from '@config/index';
 import { ImageModelInterface } from '@models/Image';
+import { generatePassword } from '@helpers/auth';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'User';
 
-export interface UserModelInterface extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  role?: number;
-  first_name: string;
-  last_name?: string;
-  username: string;
-  email?: string;
-  password?: string;
-  reset_token?: string;
-  profile_image: ImageModelInterface;
-  online?: boolean;
-  url?: string;
-  last_seen?: Date;
-}
-
-export interface UserUpdateFieldsInterface {
+export interface UserBaseInterface {
   first_name?: string;
   last_name?: string;
   username?: string;
   profile_image?: ImageModelInterface;
+  isConfirmed?: boolean;
+  isActive?: boolean;
+  isBlocked?: boolean;
+  softDelete?: boolean;
   url?: string;
+}
+
+export interface UserModelInterface extends UserBaseInterface, mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
+  role?: number;
+  email?: string;
+  password?: string;
+  online?: boolean;
+  last_seen?: Date;
+}
+
+export interface UserUpdateFieldsInterface extends UserBaseInterface {
+  online?: boolean;
+  last_seen?: Date;
+}
+
+export interface UserUpdatePasswordInterface extends UserBaseInterface {
+  password: string;
 }
 
 const Schema = mongoose.Schema;
@@ -39,7 +46,7 @@ function lastNameValidator(value): boolean | void {
   if (value) {
     return NAME.REGEX.test(value) && value.length >= NAME.MIN_LENGTH;
   }
-};
+}
 
 const Model = Schema({
   role: {
@@ -78,14 +85,27 @@ const Model = Schema({
     type: String,
     required: true
   },
-  reset_token: {
-    type: String
-  },
   profile_image: {
     type: Schema.Types.ObjectId,
     ref: 'Image'
   },
   online: {
+    type: Boolean,
+    default: false
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: false
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  softDelete: {
     type: Boolean,
     default: false
   },
@@ -99,14 +119,14 @@ const Model = Schema({
     default: Date.now
   }
 }, {
-    timestamps: true
+  timestamps: true
 });
 
-Model.pre('save', async function(): Promise<void> {
+Model.pre('save', async function (): Promise<void> {
+  console.log('PRE SAVE - 1:', this.isModified('password'), this);
   if (this.isModified('password') || this.isModified('username')) {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(this.password, salt);
-    this.password = hash;
+    console.log('PRE SAVE - 2:', this.isModified('password'), this);
+    this.password = await generatePassword(this.password);
     this.url = '@' + this.username;
   }
 });

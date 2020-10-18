@@ -26,6 +26,7 @@ export const DEF_MIDDLEWARE: MFunction[] = [
 const DEF_METHOD = 'get';
 const DEF_CONTROLLER: CFunction = notFoundErrorHandler;
 const { ALLOWED_ROUTER_METHODS } = config;
+const ROUTE_PARAMS = { mergeParams: true };
 
 export interface RouteItem {
   route: string;
@@ -38,26 +39,26 @@ export interface RouteItem {
 const routes: RouteItem[] = routesConfig;
 
 function generateRoutes(
-    router: express.Router,
-    routes: RouteItem[]
+  router: express.Router,
+  routes: RouteItem[]
 ): express.Router {
   for (const i in routes) {
-    const { 
-      method = DEF_METHOD, 
-      route, 
-      middleware = DEF_MIDDLEWARE, 
-      controller = DEF_CONTROLLER, 
+    const {
+      method = DEF_METHOD,
+      route,
+      middleware = DEF_MIDDLEWARE,
+      controller = DEF_CONTROLLER,
       children = []
     } = routes[i];
 
     if (!ALLOWED_ROUTER_METHODS.includes(method)) {
-      throw new Error(`'${ method }' - router method is forbidden`);
+      throw new Error(`'${method}' - router method is forbidden`);
     }
 
     router[method](route, middleware, controller);
 
     if (children && children.length) {
-      const childrenRoutes = generateRoutes(express.Router(), children);
+      const childrenRoutes = generateRoutes(express.Router(ROUTE_PARAMS), children);
       router.use(route, middleware, childrenRoutes);
     }
   }
@@ -65,4 +66,4 @@ function generateRoutes(
   return router;
 };
 
-export default generateRoutes(express.Router(), routes);
+export default generateRoutes(express.Router(ROUTE_PARAMS), routes);

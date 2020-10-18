@@ -27,7 +27,7 @@ export const files = check('files')
     return Promise.reject('Image is required');
   });
 
-export default  {
+export default {
   original_name,
   files
 };
