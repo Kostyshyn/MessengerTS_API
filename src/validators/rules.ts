@@ -16,6 +16,11 @@ const resetPassword = [
   'email'
 ];
 
+const changePassword = [
+  'passwordReg',
+  'confirmPasswordReg'
+];
+
 const updateInfo = [
   'first_name',
   'last_name',
@@ -31,6 +36,7 @@ export default {
   register,
   login,
   resetPassword,
+  changePassword,
   updateInfo,
   image
 };

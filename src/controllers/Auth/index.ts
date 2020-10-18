@@ -71,6 +71,11 @@ class AuthController extends Controller {
         token: authToken
       });
     } catch (err) {
+      if (err.status === 404) {
+        return next(new ValidationError({
+          token: ['Token invalid or expired']
+        }));
+      }
       return next(err);
     }
   }
@@ -111,6 +116,38 @@ class AuthController extends Controller {
       if (err.status === 404) {
         return next(new ValidationError({
           email: [`User with email '${email}' is not exists`]
+        }));
+      }
+      return next(err);
+    }
+  }
+
+  public async changePassword(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { token, password } = req.body;
+      const resetToken = await TokenService.getToken({ value: token }, 'reset');
+      const { user: userId, _id: tokenId } = resetToken;
+      const updatedUser = await AuthService.updateUserPassword(userId, { password });
+      await TokenService.deleteToken(tokenId, 'reset');
+      await MailService.sendInfoEmail(
+        updatedUser,
+        'Security alert',
+        'Your password has been changed',
+        'Security alert'
+      );
+      const authToken = generateToken({ id: updatedUser._id });
+      return res.json({
+        user: updatedUser,
+        token: authToken
+      });
+    } catch (err) {
+      if (err.status === 404) {
+        return next(new ValidationError({
+          token: ['Token invalid or expired. Please re-initiate password resetting']
         }));
       }
       return next(err);

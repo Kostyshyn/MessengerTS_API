@@ -1,41 +1,40 @@
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcryptjs';
 import config from '@config/index';
 import { ImageModelInterface } from '@models/Image';
+import { generatePassword } from '@helpers/auth';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MODEL_NAME = 'User';
 
-export interface UserModelInterface extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  role?: number;
-  first_name: string;
-  last_name?: string;
-  username: string;
-  email?: string;
-  password?: string;
-  profile_image: ImageModelInterface;
-  online?: boolean;
-  isConfirmed?: boolean;
-  isActive?: boolean;
-  isBlocked?: boolean;
-  softDelete?: boolean;
-  url?: string;
-  last_seen?: Date;
-}
-
-export interface UserUpdateFieldsInterface {
+export interface UserBaseInterface {
   first_name?: string;
   last_name?: string;
   username?: string;
   profile_image?: ImageModelInterface;
-  online?: boolean;
   isConfirmed?: boolean;
   isActive?: boolean;
   isBlocked?: boolean;
   softDelete?: boolean;
   url?: string;
+}
+
+export interface UserModelInterface extends UserBaseInterface, mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
+  role?: number;
+  email?: string;
+  password?: string;
+  online?: boolean;
+  last_seen?: Date;
+}
+
+export interface UserUpdateFieldsInterface extends UserBaseInterface {
+  online?: boolean;
+  last_seen?: Date;
+}
+
+export interface UserUpdatePasswordInterface extends UserBaseInterface {
+  password: string;
 }
 
 const Schema = mongoose.Schema;
@@ -124,9 +123,10 @@ const Model = Schema({
 });
 
 Model.pre('save', async function (): Promise<void> {
+  console.log('PRE SAVE - 1:', this.isModified('password'), this);
   if (this.isModified('password') || this.isModified('username')) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    console.log('PRE SAVE - 2:', this.isModified('password'), this);
+    this.password = await generatePassword(this.password);
     this.url = '@' + this.username;
   }
 });

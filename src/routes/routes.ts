@@ -38,6 +38,12 @@ export default [
         controller: AuthController.resetPassword
       },
       {
+        route: '/change-password',
+        method: 'post',
+        middleware: validate('changePassword'),
+        controller: AuthController.changePassword
+      },
+      {
         route: '/user',
         middleware: [protectedRoute],
         controller: UserController.fetchUser,

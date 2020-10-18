@@ -43,6 +43,7 @@ class MailService extends Service implements Mailer {
   private transporter: nodemailer.Transporter;
 
   private templates: Dictionary<string> = {
+    'info': 'mails/info',
     'userConfirmation': 'mails/userConfirmation',
     'resetPassword': 'mails/resetPassword'
   };
@@ -126,7 +127,25 @@ class MailService extends Service implements Mailer {
       to: email,
       subject: 'Reset password'
     });
+  }
 
+  public async sendInfoEmail(
+    user: UserModelInterface,
+    title: string,
+    message: string,
+    subject: string
+  ): Promise<SentMessageInfo> {
+    const { email } = user;
+    // TODO: make it more reusable and flexible
+    return this.sendEmail('info', {
+      title,
+      message,
+      first_name: user.first_name,
+      last_name: user.last_name,
+    }, {
+      to: email,
+      subject
+    });
   }
 
 }
