@@ -2,6 +2,7 @@
 
 export const userSelf = [
   'profile_image',
+  'role',
   'online',
   'first_name',
   'last_name',
