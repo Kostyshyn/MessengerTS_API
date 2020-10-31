@@ -6,9 +6,7 @@ import {
 import Service from '@services/index';
 import UserService from '@services/User/index';
 import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
-import { showFields } from '@data_lists/index';
-import { userSelf as userSelfFields } from '@data_lists/user';
-import { userImageFields } from '@data_lists/image';
+import select from '@data_lists/index';
 import { validatePassword, generatePassword } from '@helpers/auth';
 
 class AuthService extends Service {
@@ -22,16 +20,22 @@ class AuthService extends Service {
     const findUser = await this.findOne<UserModelInterface>(User, {
       'username': user.username
     }, {
-      select: `${userSelfFields.join(' ')} password`,
+      select: `${select.string('userSelf')} password`,
       populate: [
-        { path: 'profile_image', select: userImageFields.join(' ') }
+        {
+          path: 'profile_image',
+          select: select.string('profileImage')
+        }
       ]
     });
 
     if (findUser) {
       const isValidPass = await validatePassword(findUser.password, user.password);
       if (isValidPass) {
-        return showFields(findUser, [...userSelfFields, '_id']);
+        return select.showFields(
+          findUser,
+          [...select.fields('userSelf'), '_id']
+        );
       }
 
       throw new ValidationError({
@@ -65,9 +69,10 @@ class AuthService extends Service {
     try {
       const userRecord = await this.create(User, user);
 
-      return {
-        ...showFields(userRecord, [...userSelfFields, '_id'])
-      };
+      return select.showFields(
+        userRecord,
+        [...select.fields('userSelf'), '_id']
+      );
     } catch (err) {
       throw new HttpException(500, err.message);
     }

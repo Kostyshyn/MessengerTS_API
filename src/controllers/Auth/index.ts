@@ -108,7 +108,7 @@ class AuthController extends Controller {
   ): Promise<R> {
     const { email } = req.body;
     try {
-      const user = await UserService.getUserByEmail(email);
+      const user = await UserService.getUserBy({ email });
       const origin = req.header('Origin');
       await MailService.sendResetPasswordEmail(user, origin);
       return res.json({ success: true });

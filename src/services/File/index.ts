@@ -7,8 +7,8 @@ import Service, {
   PaginationInterface,
   ServiceOptionsInterface
 } from '@services/index';
-import { userAllImagesFields } from '@data_lists/image';
 import { FileInterface } from '@services/Upload';
+import select from '@data_lists/index';
 import { truncate } from '@helpers/general';
 import { resizeImage } from '@helpers/resizeImage';
 import { deleteFile, checkDir } from '@helpers/file';
@@ -80,18 +80,17 @@ class FileService extends Service {
     options: ServiceOptionsInterface = {}
   ): Promise<PaginationInterface<ImageModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['Image'].PER_PAGE;
-    const sort = { createdAt: 'desc' };
+    const sort = options.sort || { createdAt: 'desc' };
     const query = {
       user: id
     };
-    const images = await this.find<ImageModelInterface>(Image, query, {
+
+    return await this.find<ImageModelInterface>(Image, query, {
       ...options,
-      select: userAllImagesFields.join(' '),
+      select: select.string('images'),
       limit,
       sort
     });
-
-    return images;
   }
 }
 

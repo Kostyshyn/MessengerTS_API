@@ -24,7 +24,7 @@ export const user = [
   'url'
 ];
 
-export const userList = [
+export const users = [
   '-_id',
   'profile_image',
   'first_name',
@@ -33,3 +33,9 @@ export const userList = [
   'last_seen',
   'url'
 ];
+
+export default {
+  userSelf,
+  user,
+  users
+}

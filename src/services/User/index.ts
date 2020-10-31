@@ -9,12 +9,7 @@ import {
   NotFoundError,
   ValidationError
 } from '@error_handlers/errors';
-import {
-  userSelf as userSelfFields,
-  user as userFields,
-  userList as userListFields
-} from '@data_lists/user';
-import { userImageFields } from '@data_lists/image';
+import select from '@data_lists/index';
 
 const { PAGINATION } = config;
 
@@ -29,9 +24,12 @@ class UserService extends Service {
   ): Promise<UserModelInterface> {
 
     const user = await this.findById<UserModelInterface>(User, id, {
-      select: userSelfFields.join(' '),
+      select: select.string('userSelf'),
       populate: [
-        { path: 'profile_image', select: userImageFields.join(' ') }
+        {
+          path: 'profile_image',
+          select: select.string('profileImage')
+        }
       ]
     });
 
@@ -48,9 +46,15 @@ class UserService extends Service {
   ): Promise<UserModelInterface> {
 
     const query = { _id: id };
-    const options = { 'fields': userSelfFields.join(' '), new: true };
+    const options = {
+      'fields': select.string('userSelf'),
+      new: true
+    };
     const populate = [
-      { path: 'profile_image', select: userImageFields.join(' ') }
+      {
+        path: 'profile_image',
+        select: select.string('profileImage')
+      }
     ];
 
     const updatedUser = await this.updateOne<UserModelInterface>(
@@ -107,7 +111,7 @@ class UserService extends Service {
       '_id': {
         $ne: id
       },
-      // TODO: dynamic search fields
+      // TODO: dynamic text fields for search
       $or: [
         { 'username': regex },
         { 'first_name': regex },
@@ -116,10 +120,11 @@ class UserService extends Service {
     };
     return await this.find<UserModelInterface>(User, query, {
       ...options,
-      select: userListFields.join(' '),
+      select: select.string('users'),
       limit,
       populate: {
-        path: 'profile_image', select: userImageFields.join(' ')
+        path: 'profile_image',
+        select: select.string('profileImage')
       }
     });
   }
@@ -127,9 +132,12 @@ class UserService extends Service {
   public async getUserBy(query: object = {}): Promise<UserModelInterface> {
 
     const user = await this.findOne<UserModelInterface>(User, query, {
-      select: userFields.join(' '),
+      select: select.string('user'),
       populate: [
-        { path: 'profile_image', select: userImageFields.join(' ') }
+        {
+          path: 'profile_image',
+          select: select.string('profileImage')
+        }
       ]
     });
 
@@ -138,21 +146,6 @@ class UserService extends Service {
     }
 
     throw new NotFoundError('User');
-  }
-
-  public async getUserById(id: string): Promise<UserModelInterface> {
-
-    return this.getUserBy({ _id: id });
-  }
-
-  public async getUserByUrl(url: string): Promise<UserModelInterface> {
-
-    return this.getUserBy({ url });
-  }
-
-  public async getUserByEmail(email: string): Promise<UserModelInterface> {
-
-    return this.getUserBy({ email });
   }
 
 }
