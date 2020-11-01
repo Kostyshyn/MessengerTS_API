@@ -51,7 +51,7 @@ class UserController extends Controller {
     try {
       const { id } = req.decoded;
       const { page, limit, keyword, sort } = req.query;
-      // TODO: need to show actual user's contacts, for now just show all users now
+      // TODO: need to show actual user's contacts, for now just show all users
       const users = await UserService.getUsers(id, keyword, {
         page,
         limit,

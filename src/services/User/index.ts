@@ -118,7 +118,7 @@ class UserService extends Service {
         { 'last_name': regex }
       ]
     };
-    return await this.find<UserModelInterface>(User, query, {
+    return this.find<UserModelInterface>(User, query, {
       ...options,
       select: select.string('users'),
       limit,

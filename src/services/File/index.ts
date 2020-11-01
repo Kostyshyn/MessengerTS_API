@@ -30,7 +30,7 @@ class FileService extends Service {
   }
 
   public async createImage(image: ImageModelInterface): Promise<ImageModelInterface> {
-    return await this.create(Image, image);
+    return this.create(Image, image);
   }
 
   public async createProfileImage(
@@ -85,7 +85,7 @@ class FileService extends Service {
       user: id
     };
 
-    return await this.find<ImageModelInterface>(Image, query, {
+    return this.find<ImageModelInterface>(Image, query, {
       ...options,
       select: select.string('images'),
       limit,
