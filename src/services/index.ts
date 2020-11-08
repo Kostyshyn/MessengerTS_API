@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { generateSort, generatePagination } from '@helpers/service';
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -26,8 +27,6 @@ export interface PaginationInterface<T> {
   prevPage: boolean | number;
   nextPage: boolean | number;
 }
-
-export const SORT_DIRECTIONS = ['asc', 'desc'];
 
 class Service {
 
@@ -57,22 +56,13 @@ class Service {
     const { limit, select, populate } = options;
     const sortFromQuery = options.sort;
     const fields = select.split(' ');
-    const sort = {};
-    for (const key in sortFromQuery) {
-      if (
-        sortFromQuery[key] &&
-        sortFromQuery.hasOwnProperty(key) &&
-        fields.includes(key) &&
-        SORT_DIRECTIONS.includes(sortFromQuery[key])
-      ) {
-        sort[key] = sortFromQuery[key];
-      }
-    }
-    const page = Math.abs(options.page) || 1;
+    const sort = generateSort(sortFromQuery, fields);
     const total = await this.count(model, query);
-    const totalPages = Math.ceil(total / limit);
-    const prevPage = page !== 1 ? (page - 1) : false;
-    const nextPage = page < totalPages ? (page + 1) : false;
+    const { page, ...restPagination } = generatePagination(
+      options.page,
+      total,
+      limit
+    );
     return model
       .find(query)
       .skip(limit * (page - 1))
@@ -87,9 +77,7 @@ class Service {
           total,
           page,
           limit,
-          totalPages,
-          prevPage,
-          nextPage
+          ...restPagination
         });
       })
       .catch(err => {

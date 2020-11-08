@@ -43,6 +43,26 @@ class UserController extends Controller {
     }
   }
 
+  public async getUserContacts(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.decoded;
+      const { page, limit, keyword, sort } = req.query;
+      // TODO: need to show actual user's contacts, for now just show all users
+      const users = await UserService.getUsers(id, keyword, {
+        page,
+        limit,
+        sort
+      });
+      return res.json(users);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   public async getUsers(
     req: express.Request,
     res: express.Response,
@@ -62,20 +82,6 @@ class UserController extends Controller {
     }
   }
 
-  public async getUserByUrl(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ): Promise<R> {
-    try {
-      const { url } = req.params;
-      const user = await UserService.getUserByUrl(url);
-      return res.json({ user });
-    } catch (err) {
-      return next(err);
-    }
-  }
-
   public async getUserById(
     req: express.Request,
     res: express.Response,
@@ -83,7 +89,7 @@ class UserController extends Controller {
   ): Promise<R> {
     try {
       const { id } = req.params;
-      const user = await UserService.getUserById(id);
+      const user = await UserService.getUserBy({ _id: id });
       return res.json({ user });
     } catch (err) {
       return next(err);
@@ -97,8 +103,13 @@ class UserController extends Controller {
   ): Promise<R> {
     try {
       const { id } = req.params;
-      const images = await FileService.getUserImages(id);
-      return res.json({ images });
+      const { page, limit, sort } = req.query;
+      const images = await FileService.getUserImages(id, {
+        page,
+        limit,
+        sort
+      });
+      return res.json(images);
     } catch (err) {
       return next(err);
     }
