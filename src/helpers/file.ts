@@ -53,5 +53,5 @@ export const renderTemplate = async (
 ): Promise<string> => {
   const { TEMPLATES_FOLDER, TEMPLATES_EXT } = config;
   const templatePath = resolve(process.cwd(), TEMPLATES_FOLDER, `${filePath}.${TEMPLATES_EXT}`);
-  return await renderFile(templatePath, payload, options);
+  return renderFile(templatePath, payload, options);
 };

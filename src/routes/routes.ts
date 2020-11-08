@@ -62,6 +62,10 @@ export default [
               validate('image')
             ],
             controller: UploadController.uploadProfileImage
+          },
+          {
+            route: '/contacts',
+            controller: UserController.getUserContacts
           }
         ]
       },
