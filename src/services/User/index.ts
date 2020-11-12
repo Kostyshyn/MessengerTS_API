@@ -100,7 +100,7 @@ class UserService extends Service {
   }
 
   public async getUsers(
-    id: string,
+    id = '',
     keyword: string,
     options: ServiceOptionsInterface
   ): Promise<PaginationInterface<UserModelInterface>> {

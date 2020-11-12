@@ -22,7 +22,8 @@ class AuthController extends Controller {
     try {
       const user = await AuthService.login(req.body);
       const token = generateToken({
-        id: user._id
+        id: user._id,
+        role: user.role
       });
       return res.json({ user, token });
     } catch (err) {
@@ -38,7 +39,8 @@ class AuthController extends Controller {
     try {
       const user = await AuthService.register(req.body);
       const token = generateToken({
-        id: user._id
+        id: user._id,
+        role: user.role
       });
       const origin = req.header('Origin');
       await MailService.sendConfirmationEmail(user, origin);
@@ -65,7 +67,10 @@ class AuthController extends Controller {
       }
       const confirmedUser = await UserService.updateUserFields(userId, { isConfirmed: true });
       await TokenService.deleteToken(tokenId, 'confirm');
-      const authToken = generateToken({ id: user._id });
+      const authToken = generateToken({
+        id: user._id,
+        role: user.role
+      });
       return res.json({
         user: confirmedUser,
         token: authToken
@@ -139,7 +144,10 @@ class AuthController extends Controller {
         'Your password has been changed',
         'Security alert'
       );
-      const authToken = generateToken({ id: updatedUser._id });
+      const authToken = generateToken({
+        id: updatedUser._id,
+        role: updatedUser.role
+      });
       return res.json({
         user: updatedUser,
         token: authToken
