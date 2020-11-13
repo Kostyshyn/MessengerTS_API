@@ -43,35 +43,14 @@ class UserController extends Controller {
     }
   }
 
-  public async getUserContacts(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ): Promise<R> {
-    try {
-      const { id } = req.decoded;
-      const { page, limit, keyword, sort } = req.query;
-      // TODO: need to show actual user's contacts, for now just show all users
-      const users = await UserService.getUsers(id, keyword, {
-        page,
-        limit,
-        sort
-      });
-      return res.json(users);
-    } catch (err) {
-      return next(err);
-    }
-  }
-
   public async getUsers(
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ): Promise<R> {
     try {
-      const { id } = req.decoded;
       const { page, limit, keyword, sort } = req.query;
-      const users = await UserService.getUsers(id, keyword, {
+      const users = await UserService.getUsers('', keyword, {
         page,
         limit,
         sort
@@ -110,6 +89,26 @@ class UserController extends Controller {
         sort
       });
       return res.json(images);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  public async getUserContacts(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.decoded;
+      const { page, limit, keyword, sort } = req.query;
+      // TODO: need to show actual user's contacts, for now just show all users
+      const users = await UserService.getUsers(id, keyword, {
+        page,
+        limit,
+        sort
+      });
+      return res.json(users);
     } catch (err) {
       return next(err);
     }

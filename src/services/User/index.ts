@@ -101,16 +101,19 @@ class UserService extends Service {
 
   public async getUsers(
     id = '',
-    keyword: string,
-    options: ServiceOptionsInterface
+    keyword = '',
+    options: ServiceOptionsInterface = {}
   ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const sanitized = keyword.replace(/\\/g, '').trim();
     const regex = new RegExp(sanitized, 'i');
-    const query = {
+    const exceptId = (id): object => (id ? {
       '_id': {
         $ne: id
-      },
+      }
+    } : {});
+    const query = {
+      ...exceptId(id),
       // TODO: dynamic text fields for search
       $or: [
         { 'username': regex },

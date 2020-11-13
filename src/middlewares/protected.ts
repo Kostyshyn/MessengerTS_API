@@ -15,7 +15,6 @@ export const protectedRoute = (
         return next(new TokenVerificationError('Token verification failed'));
       }
       req.decoded = decoded;
-      console.log('decoded', decoded);
       return next();
     });
   } else {
@@ -43,7 +42,7 @@ export const adminRoute = (
 ): express.NextFunction => {
   const { PRIVATE_ACCESS_ADMIN } = process.env;
   const { role } = req.decoded;
-  if (role && role === PRIVATE_ACCESS_ADMIN) {
+  if (role && role === parseInt(PRIVATE_ACCESS_ADMIN)) {
     return next();
   }
   return next(new ForbiddenError('Access forbidden'));

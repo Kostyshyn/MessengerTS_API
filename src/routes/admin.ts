@@ -5,5 +5,10 @@ export default {
   route: '/admin',
   middleware: [protectedRoute, adminRoute],
   controller: AdminController.getAdminData,
-  children: []
+  children: [
+    {
+      route: '/users',
+      controller: AdminController.getUsers
+    },
+  ]
 }
