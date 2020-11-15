@@ -100,17 +100,21 @@ class UserService extends Service {
   }
 
   public async getUsers(
-    id: string,
-    keyword: string,
-    options: ServiceOptionsInterface
+    id = '',
+    keyword = '',
+    options: ServiceOptionsInterface = {},
+    selectFields = 'users'
   ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const sanitized = keyword.replace(/\\/g, '').trim();
     const regex = new RegExp(sanitized, 'i');
-    const query = {
+    const exceptId = (id): object => (id ? {
       '_id': {
         $ne: id
-      },
+      }
+    } : {});
+    const query = {
+      ...exceptId(id),
       // TODO: dynamic text fields for search
       $or: [
         { 'username': regex },
@@ -120,7 +124,7 @@ class UserService extends Service {
     };
     return this.find<UserModelInterface>(User, query, {
       ...options,
-      select: select.string('users'),
+      select: select.string(selectFields),
       limit,
       populate: {
         path: 'profile_image',

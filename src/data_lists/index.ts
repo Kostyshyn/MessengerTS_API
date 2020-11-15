@@ -15,7 +15,7 @@ export class Select {
     if (list) {
       return this.lists[type];
     }
-    throw new Error('The list is not found');
+    throw new Error(`The list: '${type}' is not found`);
   }
 
   public string(type: string): string {

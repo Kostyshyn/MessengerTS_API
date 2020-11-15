@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as path from 'path';
 import config from '@config/index';
-import protectedRoute from '@middlewares/protected';
+import { protectedRoute } from '@middlewares/protected';
 
 const {
   PUBLIC_DIR,

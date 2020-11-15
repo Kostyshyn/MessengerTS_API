@@ -35,8 +35,26 @@ export const users = [
   'url'
 ];
 
+export const usersAdmin = [
+  'profile_image',
+  'role',
+  'online',
+  'first_name',
+  'last_name',
+  'username',
+  'email',
+  'last_seen',
+  'isConfirmed',
+  'isActive',
+  'isBlocked',
+  'softDelete',
+  'updatedAt',
+  'createdAt'
+];
+
 export default {
   userSelf,
   user,
-  users
+  users,
+  usersAdmin
 }
