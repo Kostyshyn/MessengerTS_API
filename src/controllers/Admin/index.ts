@@ -29,11 +29,12 @@ class AdminController extends Controller {
   ): Promise<R> {
     try {
       const { page, limit, keyword, sort } = req.query;
+      const selectFields = 'usersAdmin';
       const users = await UserService.getUsers('', keyword, {
         page,
         limit,
         sort
-      });
+      }, selectFields);
       return res.json(users);
     } catch (err) {
       return next(err);

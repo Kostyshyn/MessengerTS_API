@@ -49,8 +49,9 @@ class UserController extends Controller {
     next: express.NextFunction
   ): Promise<R> {
     try {
+      const { id } = req.decoded;
       const { page, limit, keyword, sort } = req.query;
-      const users = await UserService.getUsers('', keyword, {
+      const users = await UserService.getUsers(id, keyword, {
         page,
         limit,
         sort

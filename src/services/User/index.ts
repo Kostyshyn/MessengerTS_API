@@ -102,7 +102,8 @@ class UserService extends Service {
   public async getUsers(
     id = '',
     keyword = '',
-    options: ServiceOptionsInterface = {}
+    options: ServiceOptionsInterface = {},
+    selectFields = 'users'
   ): Promise<PaginationInterface<UserModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['User'].PER_PAGE;
     const sanitized = keyword.replace(/\\/g, '').trim();
@@ -123,7 +124,7 @@ class UserService extends Service {
     };
     return this.find<UserModelInterface>(User, query, {
       ...options,
-      select: select.string('users'),
+      select: select.string(selectFields),
       limit,
       populate: {
         path: 'profile_image',
