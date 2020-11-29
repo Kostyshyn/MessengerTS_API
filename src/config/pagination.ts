@@ -4,5 +4,8 @@ export default {
   },
   'Image': {
     PER_PAGE: 50
+  },
+  'Origin': {
+    PER_PAGE: 20
   }
 };

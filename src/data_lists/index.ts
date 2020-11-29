@@ -1,5 +1,6 @@
 import image from '@data_lists/image';
 import user from '@data_lists/user';
+import origin from '@data_lists/origin';
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -29,6 +30,7 @@ export class Select {
 
 export default new Select({
   ...user,
-  ...image
+  ...image,
+  ...origin
 });
 

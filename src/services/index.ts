@@ -106,7 +106,7 @@ class Service {
     query: object,
     fields: object,
     options: object,
-    populate: PopulateInterface[] | PopulateInterface
+    populate?: PopulateInterface[] | PopulateInterface
   ): Promise<T> {
     return model
       .findOneAndUpdate(query, fields, options)

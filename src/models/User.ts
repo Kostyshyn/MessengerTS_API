@@ -123,9 +123,7 @@ const Model = Schema({
 });
 
 Model.pre('save', async function (): Promise<void> {
-  console.log('PRE SAVE - 1:', this.isModified('password'), this);
   if (this.isModified('password') || this.isModified('username')) {
-    console.log('PRE SAVE - 2:', this.isModified('password'), this);
     this.password = await generatePassword(this.password);
     this.url = '@' + this.username;
   }

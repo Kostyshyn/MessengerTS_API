@@ -1,6 +1,8 @@
 import * as express from 'express';
 import { RouteItem, MFunction } from '@routes/index';
 import { DBInterface } from '@root/database';
+import { runSeeds } from '@seeds/index';
+import { initCache } from '@root/cache';
 import { Mailer } from '@services/Mail';
 import { notFoundErrorHandler, errorHandler } from '@error_handlers/index';
 import { privateFolder } from '@middlewares/storage';
@@ -31,9 +33,11 @@ class App {
 
   private async connectDatabase(database: DBInterface): Promise<void> {
     await database.setup();
+    await runSeeds(); // TODO: check NODE_ENV
   }
 
   private async runServices(): Promise<void> {
+    await initCache();
     await this.mailer.init();
   }
 
