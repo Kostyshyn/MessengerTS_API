@@ -16,7 +16,7 @@ class OriginService extends Service {
     origin: OriginModelInterface
   ): Promise<OriginModelInterface> {
     try {
-      return await this.create<OriginModelInterface>(origin, origin);
+      return await this.create<OriginModelInterface>(Origin, origin);
     } catch (err) {
       throw new HttpException(500, err.message);
     }

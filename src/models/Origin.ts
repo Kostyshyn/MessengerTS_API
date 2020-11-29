@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { setOriginsCache } from '@cache/origin';
 import { nanoid } from 'nanoid';
 import config from '@config/index';
 
@@ -40,9 +41,8 @@ const Model = Schema({
   timestamps: true
 });
 
-Model.post('save', function (doc, next): void {
-  console.log('Origin saved', doc);
-  next();
+Model.post('save', async function (): Promise<void> {
+  await setOriginsCache();
 });
 
 const Origin = mongoose.model<OriginModelInterface>(MODEL_NAME, Model);

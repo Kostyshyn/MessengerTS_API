@@ -4,9 +4,9 @@ import FILES from './files';
 import GENERATORS from './generators';
 
 export default {
-  ALLOWED_ROUTER_METHODS: ['get', 'post', 'put', 'delete'],
+  ALLOWED_ROUTER_METHODS: ['get', 'post', 'put', 'delete', 'options'],
   DEFAULTS: {
-    ORIGIN: 'http://localhost:8080',
+    ORIGIN: 'Postman', // http://localhost:8080
     PUBLIC_DIR: 'public',
     PRIVATE_DIR: 'storage',
     TMP_DIR: 'tmp',

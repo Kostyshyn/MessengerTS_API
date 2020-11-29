@@ -5,8 +5,9 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 
 // storage
-
 import { publicFolder } from './storage';
+
+// cors
 import allowedOrigins from './cors';
 
 export default [
