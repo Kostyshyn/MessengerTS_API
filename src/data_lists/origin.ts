@@ -3,13 +3,16 @@
 export const origin = [
   'name',
   'origin',
-  'api_key'
+  'api_key',
+  'updatedAt',
+  'createdAt'
 ];
 
 export const origins = [
   'name',
   'origin',
   'api_key',
+  'updatedAt',
   'createdAt'
 ];
 

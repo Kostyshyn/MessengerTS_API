@@ -1,7 +1,7 @@
 import config from '@config/index';
 import { Origin, OriginModelInterface } from '@models/Origin';
 import Service, { PaginationInterface, ServiceOptionsInterface } from '@services/index';
-import { HttpException, NotFoundError } from '@error_handlers/errors';
+import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
 import select from '@data_lists/index';
 
 const { PAGINATION } = config;
@@ -15,6 +15,20 @@ class OriginService extends Service {
   public async createOrigin(
     origin: OriginModelInterface
   ): Promise<OriginModelInterface> {
+    const findOrigin = await this.findOne<OriginModelInterface>(Origin, {
+      $or: [
+        { 'name': origin.name },
+        { 'origin': origin.origin }
+      ]
+    });
+
+    if (findOrigin) {
+      const match = findOrigin.name === origin.name ? 'name' : 'origin';
+      throw new ValidationError({
+        [match]: [`Origin with ${match} '${origin[match]}' is already exists`]
+      });
+    }
+
     try {
       return await this.create<OriginModelInterface>(Origin, origin);
     } catch (err) {

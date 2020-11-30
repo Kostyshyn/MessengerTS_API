@@ -25,11 +25,13 @@ const Model = Schema({
     validate: NAME.REGEX,
     minlength: NAME.MIN_LENGTH,
     maxlength: NAME.MAX_LENGTH,
-    required: true
+    required: true,
+    unique: true
   },
   origin: {
     type: String,
     required: true,
+    unique: true,
     index: true
   },
   api_key: {
