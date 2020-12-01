@@ -2,16 +2,18 @@
 
 export const origin = [
   'name',
-  'origin',
+  'origin_url',
   'api_key',
+  'isDefault',
   'updatedAt',
   'createdAt'
 ];
 
 export const origins = [
   'name',
-  'origin',
+  'origin_url',
   'api_key',
+  'isDefault',
   'updatedAt',
   'createdAt'
 ];

@@ -25,6 +25,9 @@ export default {
       MIN_LENGTH: 6,
       MAX_LENGTH: 22,
       REGEX: /^[A-Za-z0-9]+(?:[_.][A-Za-z0-9]+)*$/
+    },
+    ORIGIN_URL: {
+      MIN_LENGTH: 6
     }
   }
 };

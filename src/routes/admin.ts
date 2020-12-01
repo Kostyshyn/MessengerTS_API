@@ -1,8 +1,7 @@
 import AdminController from '@controllers/Admin';
 import OriginController from '@controllers/Origin';
 import { protectedRoute, adminRoute } from '@middlewares/protected';
-import UploadController from '@controllers/Upload';
-// import { validate } from '@root/validators';
+import { validate } from '@root/validators';
 
 export default {
   route: '/admin',
@@ -19,10 +18,18 @@ export default {
       children: [
         {
           method: 'post',
-          middleware: [
-            // validate('origin')
-          ],
+          middleware: validate('originData'),
           controller: OriginController.createOrigin,
+        },
+        {
+          route: '/:id',
+          // controller: OriginController.getOrigin,
+          children: [
+            {
+              method: 'delete',
+              controller: OriginController.deleteOrigin,
+            }
+          ]
         }
       ]
     }

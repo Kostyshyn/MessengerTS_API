@@ -40,6 +40,20 @@ class OriginController extends Controller {
     }
   }
 
+  public async deleteOrigin(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.params;
+      await OriginService.deleteOrigin(id);
+      return res.json({ success: true });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
 }
 
 export default new OriginController();

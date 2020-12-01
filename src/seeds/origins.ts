@@ -6,11 +6,12 @@ const { ORIGIN } = config.DEFAULTS;
 export const originsSeed = async (): Promise<string> => {
   try {
     await OriginService.updateOrigin({
-      origin: ORIGIN
+      origin_url: ORIGIN
     }, {
       $set: {
         name: 'Default',
-        origin: ORIGIN
+        origin_url: ORIGIN,
+        isDefault: true
       }
     }, {
       upsert: true,

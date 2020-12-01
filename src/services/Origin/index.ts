@@ -18,12 +18,12 @@ class OriginService extends Service {
     const findOrigin = await this.findOne<OriginModelInterface>(Origin, {
       $or: [
         { 'name': origin.name },
-        { 'origin': origin.origin }
+        { 'origin_url': origin.origin_url }
       ]
     });
 
     if (findOrigin) {
-      const match = findOrigin.name === origin.name ? 'name' : 'origin';
+      const match = findOrigin.name === origin.name ? 'name' : 'origin_url';
       throw new ValidationError({
         [match]: [`Origin with ${match} '${origin[match]}' is already exists`]
       });
@@ -99,7 +99,7 @@ class OriginService extends Service {
     const query = {
       $or: [
         { 'name': regex },
-        { 'origin': regex }
+        { 'origin_url': regex }
       ]
     };
     return this.find<OriginModelInterface>(Origin, query, {
@@ -107,6 +107,24 @@ class OriginService extends Service {
       select: select.string(selectFields),
       limit
     });
+  }
+
+  public async deleteOrigin(id: string): Promise<OriginModelInterface> {
+    const origin = await this.findOne<OriginModelInterface>(Origin, { _id: id }, {
+      select: select.string('origin')
+    });
+    if (origin) {
+
+      if (origin.isDefault) {
+        throw new ValidationError({
+          isDefault: ['You cannot delete default origin']
+        });
+      }
+
+      return this.delete<OriginModelInterface>(Origin, { _id: id });
+    }
+
+    throw new NotFoundError('Origin');
   }
 
 }

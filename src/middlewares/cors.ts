@@ -11,7 +11,7 @@ const validateOrigin = (
   origins: Array<OriginModelInterface>,
   origin: string
 ): boolean => {
-  return origins.some(o => (o.origin === origin));
+  return origins.some(o => (o.origin_url === origin));
 };
 
 const corsOptionsDelegate = async (
