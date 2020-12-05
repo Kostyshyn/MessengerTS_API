@@ -40,6 +40,20 @@ class OriginController extends Controller {
     }
   }
 
+  public async getOrigin(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.params;
+      const origin = await OriginService.getOrigin(id);
+      return res.json({ origin });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   public async updateOrigin(
     req: express.Request,
     res: express.Response,

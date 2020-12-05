@@ -1,5 +1,6 @@
 import OriginService from '@services/Origin/index';
 import config from '@config/index';
+import { nanoid } from 'nanoid';
 
 const { ORIGIN } = config.DEFAULTS;
 
@@ -11,6 +12,7 @@ export const originsSeed = async (): Promise<string> => {
       $set: {
         name: 'Default',
         origin_url: ORIGIN,
+        api_key: nanoid(),
         isDefault: true
       }
     }, {

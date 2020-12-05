@@ -2,7 +2,6 @@ import * as mongoose from 'mongoose';
 import { setOriginsCache } from '@cache/origin';
 import { nanoid } from 'nanoid';
 import config from '@config/index';
-import { generatePassword } from '@helpers/auth';
 
 export const ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -27,8 +26,7 @@ const Model = Schema({
     validate: NAME.REGEX,
     minlength: NAME.MIN_LENGTH,
     maxlength: NAME.MAX_LENGTH,
-    required: true,
-    unique: true
+    required: true
   },
   origin_url: {
     type: String,

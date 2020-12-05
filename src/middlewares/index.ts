@@ -1,8 +1,11 @@
 import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
-import * as logger from 'morgan';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
+
+// logger
+
+import { logger, requestLogger } from './logger';
 
 // storage
 import { publicFolder } from './storage';
@@ -18,5 +21,6 @@ export default [
   express.urlencoded({ extended: false }),
   cookieParser(),
   allowedOrigins(),
+  requestLogger,
   publicFolder
 ];

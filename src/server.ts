@@ -34,7 +34,7 @@ class App {
 
   private async connectDatabase(database: DBInterface): Promise<void> {
     await database.setup();
-    await runSeeds(); // TODO: check NODE_ENV
+    // await runSeeds(); // TODO: check NODE_ENV
   }
 
   private async runServices(): Promise<void> {

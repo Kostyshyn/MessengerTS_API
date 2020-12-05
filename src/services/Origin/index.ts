@@ -2,6 +2,7 @@ import config from '@config/index';
 import { Origin, OriginModelInterface } from '@models/Origin';
 import Service, { PaginationInterface, ServiceOptionsInterface } from '@services/index';
 import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
+import { setOriginsCache } from '@cache/origin';
 import select from '@data_lists/index';
 
 const { PAGINATION } = config;
@@ -110,6 +111,7 @@ class OriginService extends Service {
     );
 
     if (updatedOrigin) {
+      await setOriginsCache();
       return updatedOrigin;
     }
 
@@ -137,7 +139,7 @@ class OriginService extends Service {
     });
   }
 
-  public async deleteOrigin(id: string): Promise<OriginModelInterface> {
+  public async deleteOrigin(id: string): Promise<boolean> {
     const origin = await this.findOne<OriginModelInterface>(Origin, { _id: id }, {
       select: select.string('origin')
     });
@@ -149,7 +151,9 @@ class OriginService extends Service {
         });
       }
 
-      return this.delete<OriginModelInterface>(Origin, { _id: id });
+      await this.delete<OriginModelInterface>(Origin, { _id: id });
+      await setOriginsCache();
+      return true;
     }
 
     throw new NotFoundError('Origin');

@@ -23,7 +23,7 @@ export default {
         },
         {
           route: '/:id',
-          // controller: OriginController.getOrigin,
+          controller: OriginController.getOrigin,
           children: [
             {
               method: 'put',
