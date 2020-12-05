@@ -64,6 +64,34 @@ class OriginService extends Service {
     throw new NotFoundError('Origin');
   }
 
+  public async updateOriginFields(
+    id: string,
+    fields: OriginModelInterface
+  ): Promise<OriginModelInterface> {
+
+    const findOrigin = await this.findOne<OriginModelInterface>(Origin, {
+      '_id': {
+        $ne: id
+      },
+      $or: [
+        { 'name': fields.name },
+        { 'origin_url': fields.origin_url }
+      ]
+    });
+
+    if (findOrigin) {
+      const match = findOrigin.name === fields.name ? 'name' : 'origin_url';
+      throw new ValidationError({
+        [match]: [`Origin with ${match} '${fields[match]}' is already exists`]
+      });
+    }
+
+    const query = { _id: id };
+    return this.updateOrigin(query, {
+      $set: fields
+    });
+  }
+
   public async updateOrigin(
     query: object,
     fields: object,

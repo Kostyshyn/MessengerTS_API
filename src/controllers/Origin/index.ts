@@ -40,6 +40,21 @@ class OriginController extends Controller {
     }
   }
 
+  public async updateOrigin(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): Promise<R> {
+    try {
+      const { id } = req.params;
+      const { name, origin_url } = req.body;
+      const origin = await OriginService.updateOriginFields(id, { name, origin_url });
+      return res.json({ origin });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   public async deleteOrigin(
     req: express.Request,
     res: express.Response,

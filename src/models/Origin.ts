@@ -49,8 +49,9 @@ const Model = Schema({
   timestamps: true
 });
 
-Model.pre('save', function (): void {
+Model.pre('save', function (next): void {
   this.api_key = nanoid();
+  next();
 });
 
 Model.post('save', async function (): Promise<void> {

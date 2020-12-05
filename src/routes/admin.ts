@@ -26,6 +26,11 @@ export default {
           // controller: OriginController.getOrigin,
           children: [
             {
+              method: 'put',
+              middleware: validate('originData'),
+              controller: OriginController.updateOrigin,
+            },
+            {
               method: 'delete',
               controller: OriginController.deleteOrigin,
             }
