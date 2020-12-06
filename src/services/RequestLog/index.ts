@@ -44,9 +44,13 @@ class RequestLogService extends Service {
     selectFields = 'requestLogs'
   ): Promise<PaginationInterface<RequestLogModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['RequestLog'].PER_PAGE;
+    const sort = options.sort || { createdAt: 'desc' };
     const sanitized = keyword.replace(/\\/g, '').trim();
     const regex = new RegExp(sanitized, 'i');
     const query = {
+      urlParts: {
+        $nin : ['admin', 'storage'] // exclude 'admin', 'storage' paths
+      },
       $or: [
         { 'ip': regex },
         { 'originalUrl': regex },
@@ -54,11 +58,90 @@ class RequestLogService extends Service {
         { 'method': regex }
       ]
     };
+
+    // const statsPerRoute = await this.getStatsPerRoute(query);
+    // const statsPerModule = await this.getStatsPerModule(query);
+    // const getStatsPerOrigin = await this.getStatsPerOrigin(query);
+    // //
+    // console.log({ statsPerRoute, statsPerModule, getStatsPerOrigin });
+
     return this.find<RequestLogModelInterface>(RequestLog, query, {
       ...options,
       select: select.string(selectFields),
-      limit
+      limit,
+      sort,
+      populate: {
+        path: 'origin',
+        select: select.string('origin')
+      }
     });
+  }
+
+  public async getRequestAggregation(
+    query: object,
+    aggregation: object[]
+  ): Promise<object[]> {
+    const prepare = [
+      {
+        $match: query
+      }
+    ];
+    return this.aggregate<object>(RequestLog, [
+      ...prepare,
+      ...aggregation
+    ])
+  }
+
+  public async getStatsPerRoute(query: object): Promise<object[]> {
+    return this.getRequestAggregation(
+      query,
+      [
+        {
+          $group: {
+            _id: { url: '$url', method: '$method' },
+            responseTime: { $avg: '$responseTime' },
+            total: { $sum: 1 }
+          }
+        }
+      ]
+    );
+  }
+
+  public async getStatsPerModule(query: object): Promise<object[]> {
+    return this.getRequestAggregation(
+      query,
+      [
+        {
+          $unwind: '$urlParts'
+        },
+        {
+          $group: {
+            _id: '$_id',
+            urlParts: { $first: '$urlParts' }
+          }
+        },
+        {
+          $group: {
+            _id: '$urlParts',
+            total: { $sum: 1 }
+          }
+        }
+      ]
+    );
+  }
+
+  public async getStatsPerOrigin(query: object): Promise<object[]> {
+    return this.getRequestAggregation(
+      query,
+      [
+        {
+          $group: {
+            _id: '$origin',
+            total: { $sum: 1 }
+          }
+        }
+      ]
+    );
   }
 
 }

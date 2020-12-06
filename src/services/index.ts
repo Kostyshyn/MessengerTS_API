@@ -26,6 +26,7 @@ export interface PaginationInterface<T> {
   totalPages: number;
   prevPage: boolean | number;
   nextPage: boolean | number;
+  meta?: object;
 }
 
 class Service {
@@ -136,6 +137,15 @@ class Service {
     query: object
   ): Promise<number> {
     return model.countDocuments(query).catch(err => {
+      throw err;
+    });
+  }
+
+  protected aggregate<T>(
+    model: mongoose.Model,
+    aggregation: object[]
+  ): Promise<Array<T>> {
+    return model.aggregate(aggregation).catch(err => {
       throw err;
     });
   }

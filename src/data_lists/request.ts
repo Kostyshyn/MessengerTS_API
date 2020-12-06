@@ -13,15 +13,18 @@ export const requestLog = [
   'decoded',
   'responseTime',
   'day',
-  'hour'
+  'hour',
+  'createdAt'
 ];
 
 export const requestLogs = [
   'url',
+  'urlParts',
   'method',
   'origin',
   'statusCode',
-  'responseTime'
+  'responseTime',
+  'createdAt'
 ];
 
 export default {

@@ -1,6 +1,7 @@
 import config from '@config/index';
 import { Origin, OriginModelInterface } from '@models/Origin';
 import Service, { PaginationInterface, ServiceOptionsInterface } from '@services/index';
+import RequestLogService from '@services/RequestLog/index';
 import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
 import { setOriginsCache } from '@cache/origin';
 import select from '@data_lists/index';
@@ -132,11 +133,65 @@ class OriginService extends Service {
         { 'origin_url': regex }
       ]
     };
-    return this.find<OriginModelInterface>(Origin, query, {
+
+    const { data, ...pagination } = await this.find<OriginModelInterface>(Origin, query, {
       ...options,
       select: select.string(selectFields),
       limit
     });
+
+    // const aggregationQuery = {
+    //   urlParts: {
+    //     $nin : ['admin', 'storage'] // exclude 'admin', 'storage' paths
+    //   },
+    //   origin: {
+    //     $in: data.map(o => o._id)
+    //   }
+    // };
+    //
+    // const meta = await RequestLogService.getStatsPerOrigin(aggregationQuery);
+
+    const meta = await RequestLogService.getRequestAggregation(
+      {
+        urlParts: {
+          $nin: ['admin', 'storage'] // exclude 'admin', 'storage' paths
+        }
+      },
+      [
+        {
+          $lookup: {
+            from: 'origins',
+            localField: 'origin',
+            foreignField: '_id',
+            as: 'origin'
+          }
+          // $lookup: {
+          //   from: 'origins',
+          //   pipeline: [
+          //     {
+          //       $match: query
+          //     }
+          //   ],
+          //   as: 'origin'
+          // }
+        },
+        {
+          $unwind: '$origin'
+        },
+        {
+          $group: {
+            _id: '$origin',
+            total: { $sum: 1 }
+          }
+        }
+      ]
+    );
+
+    return {
+      data,
+      meta,
+      ...pagination,
+    }
   }
 
   public async deleteOrigin(id: string): Promise<boolean> {
