@@ -49,7 +49,7 @@ class RequestLogService extends Service {
     const regex = new RegExp(sanitized, 'i');
     const query = {
       urlParts: {
-        $nin : ['admin', 'storage'] // exclude 'admin', 'storage' paths
+        $nin : ['admin', 'storage', 'defaults'] // exclude paths
       },
       $or: [
         { 'ip': regex },
@@ -59,13 +59,13 @@ class RequestLogService extends Service {
       ]
     };
 
-    // const statsPerRoute = await this.getStatsPerRoute(query);
+    const meta = await this.getStatsPerRoute(query);
     // const statsPerModule = await this.getStatsPerModule(query);
     // const getStatsPerOrigin = await this.getStatsPerOrigin(query);
-    // //
-    // console.log({ statsPerRoute, statsPerModule, getStatsPerOrigin });
 
-    return this.find<RequestLogModelInterface>(RequestLog, query, {
+    // console.log({ meta, statsPerModule, getStatsPerOrigin });
+
+    const { data, ...pagination } = await this.find<RequestLogModelInterface>(RequestLog, query, {
       ...options,
       select: select.string(selectFields),
       limit,
@@ -75,6 +75,12 @@ class RequestLogService extends Service {
         select: select.string('origin')
       }
     });
+
+    return {
+      data,
+      meta,
+      ...pagination,
+    };
   }
 
   public async getRequestAggregation(
@@ -102,6 +108,9 @@ class RequestLogService extends Service {
             responseTime: { $avg: '$responseTime' },
             total: { $sum: 1 }
           }
+        },
+        {
+          $sort: { total: -1 }
         }
       ]
     );

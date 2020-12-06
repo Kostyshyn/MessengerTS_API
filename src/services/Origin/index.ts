@@ -140,58 +140,22 @@ class OriginService extends Service {
       limit
     });
 
-    // const aggregationQuery = {
-    //   urlParts: {
-    //     $nin : ['admin', 'storage'] // exclude 'admin', 'storage' paths
-    //   },
-    //   origin: {
-    //     $in: data.map(o => o._id)
-    //   }
-    // };
-    //
-    // const meta = await RequestLogService.getStatsPerOrigin(aggregationQuery);
-
-    const meta = await RequestLogService.getRequestAggregation(
-      {
-        urlParts: {
-          $nin: ['admin', 'storage'] // exclude 'admin', 'storage' paths
-        }
+    const aggregationQuery = {
+      urlParts: {
+        $nin : ['admin', 'storage', 'defaults'] // exclude paths
       },
-      [
-        {
-          $lookup: {
-            from: 'origins',
-            localField: 'origin',
-            foreignField: '_id',
-            as: 'origin'
-          }
-          // $lookup: {
-          //   from: 'origins',
-          //   pipeline: [
-          //     {
-          //       $match: query
-          //     }
-          //   ],
-          //   as: 'origin'
-          // }
-        },
-        {
-          $unwind: '$origin'
-        },
-        {
-          $group: {
-            _id: '$origin',
-            total: { $sum: 1 }
-          }
-        }
-      ]
-    );
+      origin: {
+        $in: data.map(o => o._id)
+      }
+    };
+
+    const meta = await RequestLogService.getStatsPerOrigin(aggregationQuery);
 
     return {
       data,
       meta,
       ...pagination,
-    }
+    };
   }
 
   public async deleteOrigin(id: string): Promise<boolean> {
