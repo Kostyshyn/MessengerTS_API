@@ -7,5 +7,8 @@ export default {
   },
   'Origin': {
     PER_PAGE: 20
+  },
+  'RequestLog': {
+    PER_PAGE: 20
   }
 };

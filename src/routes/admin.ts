@@ -1,5 +1,6 @@
 import AdminController from '@controllers/Admin';
 import OriginController from '@controllers/Origin';
+import RequestLogController from '@controllers/RequestLog';
 import { protectedRoute, adminRoute } from '@middlewares/protected';
 import { validate } from '@root/validators';
 
@@ -35,6 +36,16 @@ export default {
               controller: OriginController.deleteOrigin,
             }
           ]
+        }
+      ]
+    },
+    {
+      route: '/requests',
+      controller: RequestLogController.getRequestLogs,
+      children: [
+        {
+          route: '/:id',
+          controller: RequestLogController.getRequestLog
         }
       ]
     }

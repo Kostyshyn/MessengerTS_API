@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as moment from 'moment';
+import RequestLogService from '@services/RequestLog/index';
 import { getCleanUrl } from '@helpers/general';
 import { OriginModelInterface } from '@models/Origin';
 import { originsCache } from '@cache/origin';
@@ -16,7 +17,7 @@ export const requestLogger = (
   next: express.NextFunction
 ): express.NextFunction => {
   const requestTime = Date.now();
-  res.on('finish', () => {
+  res.on('finish', async () => {
     const {
       ip,
       originalUrl,
@@ -41,10 +42,16 @@ export const requestLogger = (
       params
     );
 
-    console.log({
+    const urlParts = url.substring(1).split('/');
+
+    // TODO: save - route parts
+    // TODO: show - average 'responseTime' for the this type 'url'
+
+    await RequestLogService.createRequestLog({
       ip,
       originalUrl,
       url,
+      urlParts,
       method,
       params,
       query,
@@ -55,6 +62,7 @@ export const requestLogger = (
       day,
       hour
     });
+
   });
   return next();
 };
