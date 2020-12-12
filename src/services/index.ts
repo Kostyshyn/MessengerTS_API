@@ -1,5 +1,8 @@
 import * as mongoose from 'mongoose';
 import { generateSort, generatePagination } from '@helpers/service';
+import config from '@config/index';
+
+const { COLLATION } = config.DEFAULTS;
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -26,6 +29,7 @@ export interface PaginationInterface<T> {
   totalPages: number;
   prevPage: boolean | number;
   nextPage: boolean | number;
+  meta?: object;
 }
 
 class Service {
@@ -65,6 +69,10 @@ class Service {
     );
     return model
       .find(query)
+      .collation({
+        locale: COLLATION.LOCALE,
+        strength: COLLATION.STRENGTH
+      })
       .skip(limit * (page - 1))
       .sort(sort)
       .limit(limit)
@@ -106,7 +114,7 @@ class Service {
     query: object,
     fields: object,
     options: object,
-    populate: PopulateInterface[] | PopulateInterface
+    populate?: PopulateInterface[] | PopulateInterface
   ): Promise<T> {
     return model
       .findOneAndUpdate(query, fields, options)
@@ -136,6 +144,15 @@ class Service {
     query: object
   ): Promise<number> {
     return model.countDocuments(query).catch(err => {
+      throw err;
+    });
+  }
+
+  protected aggregate<T>(
+    model: mongoose.Model,
+    aggregation: object[]
+  ): Promise<Array<T>> {
+    return model.aggregate(aggregation).catch(err => {
       throw err;
     });
   }

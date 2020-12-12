@@ -32,11 +32,19 @@ const image = [
   'files'
 ];
 
+// Admin area
+
+const originData = [
+  'name',
+  'origin_url'
+];
+
 export default {
   register,
   login,
   resetPassword,
   changePassword,
   updateInfo,
-  image
+  image,
+  originData
 };

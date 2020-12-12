@@ -4,6 +4,7 @@ import { ValidationError } from '@error_handlers/errors';
 import { DEF_MIDDLEWARE, MFunction } from '@routes/index';
 import userValidators from './user';
 import imageValidators from './image';
+import originValidators from './origin';
 import rules from '@validators/rules';
 
 // add all the rules here
@@ -19,7 +20,8 @@ export interface ReqError  {
 
 const rulesHash = {
   ...userValidators,
-  ...imageValidators
+  ...imageValidators,
+  ...originValidators
 };
 
 export const formatErrors = (errors: Array<ReqError>): object => {
