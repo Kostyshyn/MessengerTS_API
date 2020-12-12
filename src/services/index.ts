@@ -1,5 +1,8 @@
 import * as mongoose from 'mongoose';
 import { generateSort, generatePagination } from '@helpers/service';
+import config from '@config/index';
+
+const { COLLATION } = config.DEFAULTS;
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -66,6 +69,10 @@ class Service {
     );
     return model
       .find(query)
+      .collation({
+        locale: COLLATION.LOCALE,
+        strength: COLLATION.STRENGTH
+      })
       .skip(limit * (page - 1))
       .sort(sort)
       .limit(limit)

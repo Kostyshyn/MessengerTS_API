@@ -11,7 +11,11 @@ export default {
     PRIVATE_DIR: 'storage',
     TMP_DIR: 'tmp',
     USER_DIR: 'user',
-    PROFILE_IMG: 'defaults/images/user/128_profile_placeholder.png'
+    PROFILE_IMG: 'defaults/images/user/128_profile_placeholder.png',
+    COLLATION: {
+      LOCALE: 'en',
+      STRENGTH: 2
+    }
   },
   LOGGER: {
     ERRORS_TO_EXIT: ['Error', 'TypeError'],
