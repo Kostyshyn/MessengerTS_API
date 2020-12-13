@@ -28,7 +28,13 @@ class RequestLogService extends Service {
   ): Promise<RequestLogModelInterface> {
 
     const requestLog = await this.findOne<RequestLogModelInterface>(RequestLog, query, {
-      select: select.string('requestLog')
+      select: select.string('requestLog'),
+      populate: [
+        {
+          path: 'origin',
+          select: select.string('origin')
+        }
+      ]
     });
 
     if (requestLog) {
@@ -37,6 +43,8 @@ class RequestLogService extends Service {
 
     throw new NotFoundError('RequestLog');
   }
+
+
 
   public async getRequestLogs(
     keyword = '',
@@ -98,13 +106,80 @@ class RequestLogService extends Service {
     ])
   }
 
+  public async getRequestStats(query: object): Promise<object> {
+      const perOrigin = await this.getRequestAggregation(
+        query,
+        [
+          {
+            $lookup: {
+              from: 'origins',
+              localField: 'origin',
+              foreignField: '_id',
+              as: 'origin'
+            }
+          },
+          {
+            $unwind: '$origin'
+          },
+          {
+            $group: {
+              _id: { origin: '$origin' },
+              min: { $min: '$responseTime' },
+              max: { $max: '$responseTime' },
+              avg: { $avg: '$responseTime' },
+              total: { $sum: 1 }
+            }
+          },
+          {
+            $sort: { total: -1 }
+          }
+        ]
+      );
+
+      const perDay = await this.getRequestAggregation(
+        query,
+        [
+          {
+            $group: {
+              _id: { dayNum: '$day' },
+              total: { $sum: 1 }
+            }
+          },
+          {
+            $sort: { total: -1 }
+          }
+        ]
+      );
+
+    const perHour = await this.getRequestAggregation(
+      query,
+      [
+        {
+          $group: {
+            _id: { hour: '$hour' },
+            total: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { total: -1 }
+        }
+      ]
+    );
+
+      return { perOrigin, perDay, perHour };
+  }
+
   public async getStatsPerRoute(query: object): Promise<object[]> {
     return this.getRequestAggregation(
       query,
       [
         {
           $group: {
-            _id: { url: '$url', method: '$method' },
+            _id: {
+              url: '$url',
+              method: '$method',
+              statusCode: '$statusCode'
+            },
             responseTime: { $avg: '$responseTime' },
             total: { $sum: 1 }
           }
