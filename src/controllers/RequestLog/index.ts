@@ -36,7 +36,12 @@ class RequestLogController extends Controller {
       const { id } = req.params;
       const query = { _id: id };
       const requestLog = await RequestLogService.getRequestLogBy(query);
-      return res.json({ requestLog });
+      const meta = await RequestLogService.getRequestStats({
+        url: requestLog.url,
+        method: requestLog.method,
+        statusCode: requestLog.statusCode
+      });
+      return res.json({ requestLog, meta });
     } catch (err) {
       return next(err);
     }
