@@ -141,12 +141,12 @@ class RequestLogService extends Service {
         [
           {
             $group: {
-              _id: { dayNum: '$day' },
+              _id: '$day',
               total: { $sum: 1 }
             }
           },
           {
-            $sort: { total: -1 }
+            $sort: { _id: 1 }
           }
         ]
       );
@@ -156,12 +156,12 @@ class RequestLogService extends Service {
       [
         {
           $group: {
-            _id: { hour: '$hour' },
+            _id: '$hour',
             total: { $sum: 1 }
           }
         },
         {
-          $sort: { total: -1 }
+          $sort: { _id: 1 }
         }
       ]
     );
