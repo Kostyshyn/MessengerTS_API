@@ -4,7 +4,7 @@ import Service, { PaginationInterface, ServiceOptionsInterface } from '@services
 import { HttpException, NotFoundError } from '@error_handlers/errors';
 import select from '@data_lists/index';
 
-const { PAGINATION } = config;
+const { PAGINATION, STATS } = config;
 
 class RequestLogService extends Service {
 
@@ -57,7 +57,7 @@ class RequestLogService extends Service {
     const regex = new RegExp(sanitized, 'i');
     const query = {
       urlParts: {
-        $nin : ['admin', 'storage', 'defaults'] // exclude paths
+        $nin : STATS.EXCLUDE_PATHS // exclude paths
       },
       $or: [
         { 'ip': regex },

@@ -21,6 +21,9 @@ export default {
     ERRORS_TO_EXIT: ['Error', 'TypeError'],
     ERRORS_TO_LOG: ['Error', 'TypeError', 'MongoError', 'HttpExceptionError']
   },
+  STATS: {
+    EXCLUDE_PATHS: ['admin', 'storage', 'defaults']
+  },
   TEMPLATES_FOLDER: 'templates',
   TEMPLATES_EXT: 'ejs',
   FILES,

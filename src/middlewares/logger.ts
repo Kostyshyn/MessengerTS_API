@@ -44,9 +44,6 @@ export const requestLogger = (
 
     const urlParts = url.substring(1).split('/');
 
-    // TODO: save - route parts
-    // TODO: show - average 'responseTime' for the this type 'url'
-
     await RequestLogService.createRequestLog({
       ip,
       originalUrl,

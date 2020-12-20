@@ -6,7 +6,7 @@ import { HttpException, NotFoundError, ValidationError } from '@error_handlers/e
 import { setOriginsCache } from '@cache/origin';
 import select from '@data_lists/index';
 
-const { PAGINATION } = config;
+const { PAGINATION, STATS } = config;
 
 class OriginService extends Service {
 
@@ -142,7 +142,7 @@ class OriginService extends Service {
 
     const aggregationQuery = {
       urlParts: {
-        $nin : ['admin', 'storage', 'defaults'] // exclude paths
+        $nin : STATS.EXCLUDE_PATHS // exclude paths
       },
       origin: {
         $in: data.map(o => o._id)
