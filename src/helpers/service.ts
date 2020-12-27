@@ -8,6 +8,10 @@ export interface PaginationInfoInterface {
 }
 
 export const SORT_DIRECTIONS = ['asc', 'desc'];
+export const SORT_CRITERIA = {
+  'asc': 1,
+  'desc': -1
+};
 
 export const generateSort = (
   sortFromQuery: object,
@@ -21,7 +25,7 @@ export const generateSort = (
       fields.includes(key) &&
       SORT_DIRECTIONS.includes(sortFromQuery[key])
     ) {
-      sort[key] = sortFromQuery[key];
+      sort[key] = SORT_CRITERIA[sortFromQuery[key]];
     }
   }
   return sort;

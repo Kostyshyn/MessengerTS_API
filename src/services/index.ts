@@ -73,8 +73,8 @@ class Service {
         locale: COLLATION.LOCALE,
         strength: COLLATION.STRENGTH
       })
-      .skip(limit * (page - 1))
       .sort(sort)
+      .skip(limit * (page - 1))
       .limit(limit)
       .select(select)
       .populate(populate)
@@ -157,6 +157,42 @@ class Service {
     });
   }
 
+  protected async aggregateExec<T>( // for JOIN
+    model: mongoose.Model,
+    query: object = {},
+    aggregation: object[],
+    options: ServiceOptionsInterface = {}
+  ): Promise<PaginationInterface<T>> {
+    const { limit, select } = options;
+    const sortFromQuery = options.sort;
+    const fields = select.split(' ');
+    const sort = generateSort(sortFromQuery, fields);
+    const total = await this.count(model, query);
+    const { page, ...restPagination } = generatePagination(
+      options.page,
+      total,
+      limit
+    );
+    return model
+      .aggregate(aggregation)
+      .sort(sort)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .project(select)
+      .exec()
+      .then(data => {
+        return Promise.resolve({
+          data,
+          total,
+          page,
+          limit,
+          ...restPagination
+        });
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
 }
 
 export default Service;

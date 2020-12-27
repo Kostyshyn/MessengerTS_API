@@ -103,7 +103,7 @@ class RequestLogService extends Service {
     return this.aggregate<object>(RequestLog, [
       ...prepare,
       ...aggregation
-    ])
+    ]);
   }
 
   public async getRequestStats(query: object): Promise<object> {

@@ -15,13 +15,17 @@ export class Select {
   public fields(type: string): string[] {
     const list = this.lists[type];
     if (list) {
-      return this.lists[type];
+      return list;
     }
     throw new Error(`The list: '${type}' is not found`);
   }
 
   public string(type: string): string {
     return this.fields(type).join(' ');
+  }
+
+  public project(type: string, inclusion = 1): object {
+    return this.fields(type).reduce((o, key) => ({ ...o, [key]: inclusion }), {});
   }
 
   public showFields = <T>(data: T, dataList: string[]): T => {

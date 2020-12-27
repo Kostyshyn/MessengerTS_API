@@ -13,7 +13,7 @@ export interface OriginModelInterface extends mongoose.Document {
   origin_url?: string;
   api_key?: string;
   isDefault?: boolean;
-  requests?: number;
+  totalRequests?: number;
 }
 
 const Schema = mongoose.Schema;

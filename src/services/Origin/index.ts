@@ -5,6 +5,8 @@ import RequestLogService from '@services/RequestLog/index';
 import { HttpException, NotFoundError, ValidationError } from '@error_handlers/errors';
 import { setOriginsCache } from '@cache/origin';
 import select from '@data_lists/index';
+import { generatePagination, generateSort } from '@helpers/service';
+import { origins } from '@data_lists/origin';
 
 const { PAGINATION, STATS } = config;
 
@@ -125,6 +127,7 @@ class OriginService extends Service {
     selectFields = 'origins'
   ): Promise<PaginationInterface<OriginModelInterface>> {
     const limit = Math.abs(options.limit) || PAGINATION['Origin'].PER_PAGE;
+    const sort = options.sort || { createdAt: 'desc' };
     const sanitized = keyword.replace(/\\/g, '').trim();
     const regex = new RegExp(sanitized, 'i');
     const query = {
@@ -134,28 +137,56 @@ class OriginService extends Service {
       ]
     };
 
-    const { data, ...pagination } = await this.find<OriginModelInterface>(Origin, query, {
-      ...options,
-      select: select.string(selectFields),
-      limit
-    });
-
-    const aggregationQuery = {
-      urlParts: {
-        $nin : STATS.EXCLUDE_PATHS // exclude paths
-      },
-      origin: {
-        $in: data.map(o => o._id)
+    return await this.aggregateExec(
+      Origin,
+      query,
+      [
+        {
+          $match: query
+        },
+        {
+          $lookup: {
+            from: 'requestlogs',
+            let: { originId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$origin',  '$$originId'] },
+                      ...STATS.EXCLUDE_PATHS.map(part => (
+                        {
+                          $not: {
+                            $in: [
+                              part,
+                              '$urlParts'
+                            ]
+                          }
+                        }
+                      ))
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'totalRequests'
+          }
+        },
+        {
+          $addFields: {
+            totalRequests: {
+              $size: '$totalRequests'
+            }
+          }
+        }
+      ],
+      {
+        ...options,
+        select: `${select.string(selectFields)} totalRequests`,
+        limit,
+        sort
       }
-    };
-
-    const meta = await RequestLogService.getStatsPerOrigin(aggregationQuery);
-
-    return {
-      data,
-      meta,
-      ...pagination,
-    };
+    );
   }
 
   public async deleteOrigin(id: string): Promise<boolean> {
